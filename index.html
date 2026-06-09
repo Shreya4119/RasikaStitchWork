@@ -1314,7 +1314,8 @@ function openAuthModal(mode){
     document.getElementById('phoneContinueBtn').disabled = false;
     document.getElementById('emailSection').style.display = 'none';
     document.getElementById('emailToggleBtn').textContent = 'Use Email ID ▾';
-    confirmResult = null; recaptchaVer = null;
+    confirmResult = null;
+    // Don't destroy recaptchaVer — reuse the existing widget to avoid "already rendered" error
     setAuthMode(authMode);
     document.getElementById('authModalWrap').classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1377,7 +1378,10 @@ async function sendOTP(){
     } catch(err){
         errEl.textContent = err.message;
         btn.textContent = 'Get OTP'; btn.disabled = false;
-        recaptchaVer = null; confirmResult = null;
+        confirmResult = null;
+        // Clear the container so the widget can be re-rendered on next attempt
+        document.getElementById('recaptchaContainer').innerHTML = '';
+        recaptchaVer = null;
     }
 }
 async function verifyOTP(){
