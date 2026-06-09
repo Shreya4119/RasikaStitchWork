@@ -668,6 +668,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -843,7 +844,7 @@
                 💳 Payment link will be sent via WhatsApp after the owner confirms your order.
             </div>
             <div class="auth-error" id="checkoutErr2"></div>
-            <button class="btn-primary" style="width:100%;justify-content:center;background:#25D366;" id="placeOrderBtn" onclick="placeOrder()">🛒 Place Order via WhatsApp →</button>
+            <button class="btn-primary" style="width:100%;justify-content:center;background:#25D366;" id="placeOrderBtn" onclick="placeOrder()">🛒 Continue to Payment →</button>
             <button onclick="showCheckoutStep(1)" style="width:100%;margin-top:.6rem;background:none;border:1px solid var(--border);border-radius:8px;padding:.65rem;cursor:pointer;font-family:'Inter',sans-serif;font-size:.88rem;color:var(--muted);">← Back to Address</button>
         </div>
 
@@ -1290,6 +1291,14 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
+const razorpayConfig = {
+    enabled: true,                      // set true to enable Razorpay checkout flow
+    testMode: true,                     // simulated payment mode for local check
+    keyId: 'YOUR_RAZORPAY_KEY_ID',      // real key needed only for live Razorpay
+    backendOrderUrl: 'https://YOUR_BACKEND_DOMAIN/createRazorpayOrder',
+    customerSupportPhone: '+918308201964',
+};
+
 let currentUser    = null;
 let authMode       = 'signin';
 let confirmResult  = null;
@@ -1579,12 +1588,65 @@ function goToReview(){
 }
 async function placeOrder(){
     const btn = document.getElementById('placeOrderBtn');
-    btn.textContent='Placing order…'; btn.disabled=true;
+    btn.textContent='Processing order…'; btn.disabled=true;
     const total   = cart.reduce((s,i)=>s+i.price*i.qty, 0);
     const now     = new Date();
     const dp      = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
     const orderId = `RSW-${dp}-${Math.floor(1000+Math.random()*9000)}`;
-    // WhatsApp message to owner
+    const orderData = {
+        orderId,
+        userId: currentUser.uid,
+        userName: currentUser.displayName||savedAddress.name,
+        userEmail: currentUser.email||'',
+        userPhone: currentUser.phoneNumber||'+91'+savedAddress.phone,
+        address: savedAddress,
+        items: cart.map(i=>({id:i.id,name:i.name,qty:i.qty,price:i.price})),
+        total,
+        status:'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    };
+    try {
+        await db.collection('orders').add(orderData);
+        await db.collection('users').doc(currentUser.uid).set({address:savedAddress},{merge:true});
+    } catch(e){ console.warn('Firestore:',e); }
+
+    if(razorpayConfig.enabled){
+        if(razorpayConfig.testMode){
+            await processDummyPayment(orderData);
+            return;
+        }
+        try {
+            const razorpayOrder = await createRazorpayOrder({
+                amount: total * 100,
+                currency: 'INR',
+                receipt: orderId,
+                customer: {
+                    name: savedAddress.name,
+                    email: currentUser.email || '',
+                    contact: '+91' + savedAddress.phone,
+                },
+                notes: {
+                    orderId,
+                    userId: currentUser.uid,
+                }
+            });
+            openRazorpayCheckout(razorpayOrder, orderData);
+            btn.textContent='Pay with Razorpay';
+            return;
+        } catch(err){
+            console.warn('Razorpay order creation failed:', err);
+            toast('Payment setup failed. Sending order details via WhatsApp instead.');
+        }
+    }
+
+    openWhatsAppOrder(orderId, total);
+    cart=[]; saveCart(); updateCartUI();
+    document.getElementById('confirmOrderId').textContent = 'Order ID: '+orderId;
+    showCheckoutStep(3);
+    btn.textContent='Place Order via WhatsApp →'; btn.disabled=false;
+}
+
+function openWhatsAppOrder(orderId, total){
     const lines = cart.map(i=>`• ${i.name} (x${i.qty}) — ₹${(i.price*i.qty).toLocaleString('en-IN')}`);
     const msg = [
         '🧵 *New Order — रसिका Stitch Works*',
@@ -1600,25 +1662,81 @@ async function placeOrder(){
         'Please confirm and send payment link. 🙏'
     ].filter(l=>l!==null).join('\n');
     window.open(`https://wa.me/918308201964?text=${encodeURIComponent(msg)}`,'_blank');
-    // Save to Firestore
+}
+
+async function processDummyPayment(orderData){
     try {
-        await db.collection('orders').add({
-            orderId, userId:currentUser.uid,
-            userName: currentUser.displayName||savedAddress.name,
-            userEmail:currentUser.email||'', userPhone:currentUser.phoneNumber||'+91'+savedAddress.phone,
-            address:savedAddress,
-            items:cart.map(i=>({id:i.id,name:i.name,qty:i.qty,price:i.price})),
-            total, status:'pending',
-            createdAt:firebase.firestore.FieldValue.serverTimestamp(),
-        });
-        // Save address for next visit
-        await db.collection('users').doc(currentUser.uid).set({address:savedAddress},{merge:true});
-    } catch(e){ console.warn('Firestore:',e); }
-    // Clear cart + show confirmation
-    cart=[]; saveCart(); updateCartUI();
-    document.getElementById('confirmOrderId').textContent = 'Order ID: '+orderId;
+        const snapshot = await db.collection('orders').where('orderId','==',orderData.orderId).get();
+        snapshot.forEach(doc => doc.ref.update({
+            paymentStatus: 'paid',
+            paymentMethod: 'dummy',
+            paymentNote: 'Dummy payment completed for local testing',
+        }));
+    } catch(err){
+        console.warn('Dummy payment update failed:', err);
+    }
+    toast('Dummy payment completed.');
+    document.getElementById('confirmOrderId').textContent = 'Order ID: '+orderData.orderId;
     showCheckoutStep(3);
-    btn.textContent='Place Order via WhatsApp →'; btn.disabled=false;
+    document.getElementById('placeOrderBtn').textContent='Continue to Payment →';
+    document.getElementById('placeOrderBtn').disabled=false;
+}
+
+async function createRazorpayOrder(payload){
+    if(!razorpayConfig.backendOrderUrl){
+        throw new Error('Razorpay backend order URL is not configured.');
+    }
+    const res = await fetch(razorpayConfig.backendOrderUrl, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload),
+    });
+    if(!res.ok){
+        throw new Error('Unable to create Razorpay order.');
+    }
+    return res.json();
+}
+
+function openRazorpayCheckout(order, orderData){
+    if(!window.Razorpay){
+        throw new Error('Razorpay script not loaded');
+    }
+    const options = {
+        key: razorpayConfig.keyId,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'रसिका Stitch Works',
+        description: 'Order ' + orderData.orderId,
+        order_id: order.id,
+        prefill: {
+            name: orderData.userName,
+            email: orderData.userEmail,
+            contact: orderData.userPhone.replace('+91',''),
+        },
+        notes: orderData.notes || {},
+        theme: { color: '#d81b60' },
+        handler: async function(response){
+            try {
+                await db.collection('orders').where('orderId','==',orderData.orderId).get().then(snapshot=>{
+                    snapshot.forEach(doc=>doc.ref.update({
+                        paymentStatus: 'paid',
+                        razorpayPaymentId: response.razorpay_payment_id,
+                        razorpayOrderId: response.razorpay_order_id,
+                        razorpaySignature: response.razorpay_signature,
+                    }));
+                });
+                toast('Payment successful! Thank you.');
+                document.getElementById('confirmOrderId').textContent = 'Order ID: '+orderData.orderId;
+                showCheckoutStep(3);
+            } catch(err){
+                console.warn('Order update failed:',err);
+                toast('Payment succeeded but order record update failed.');
+            }
+        },
+        modal: { ondismiss: function(){ toast('Payment cancelled.'); } }
+    };
+    const rzp = new Razorpay(options);
+    rzp.open();
 }
 
 // ── DATA ──────────────────────────────────────────────────────────────
