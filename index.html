@@ -711,8 +711,32 @@
         <h2 id="authModalTitle">Sign in</h2>
         <p class="auth-subtitle">to continue shopping &amp; track orders</p>
 
-        <!-- Phone OTP (primary) -->
-        <div id="phoneSection">
+        <!-- Email / password (primary ecommerce auth) -->
+        <div id="emailSection" style="display:block;">
+            <div id="authNameField" class="auth-field" style="display:none;">
+                <label>Your Name</label>
+                <input type="text" id="authName" placeholder="e.g. Priya Sharma">
+            </div>
+            <div class="auth-field">
+                <label>Email Address</label>
+                <input type="email" id="authEmail" placeholder="you@email.com">
+            </div>
+            <div class="auth-field">
+                <label>Password</label>
+                <input type="password" id="authPassword" placeholder="••••••••">
+            </div>
+            <button class="btn-primary" style="width:100%;justify-content:center;" id="authSubmitBtn" onclick="submitAuth()">Sign In</button>
+            <div class="auth-toggle">
+                <span id="authToggleText">Don't have an account? </span><span onclick="toggleAuthMode()" id="authToggleLink" style="color:var(--teal);cursor:pointer;font-weight:500;">Create one</span>
+            </div>
+            <div style="text-align:center;margin-top:.8rem;">
+                <button type="button" class="email-toggle-link" onclick="forgotPassword()" style="background:none;border:none;color:var(--teal);cursor:pointer;padding:0;font-size:.84rem;">Forgot password?</button>
+            </div>
+        </div>
+
+        <button class="email-toggle-link" onclick="togglePhoneSection()" id="emailToggleBtn">Use mobile OTP ▾</button>
+
+        <div id="phoneSection" style="display:none;">
             <div class="phone-row">
                 <span class="phone-cc">🇮🇳 +91</span>
                 <input type="tel" id="phoneInput" placeholder="Mobile Number" maxlength="10" inputmode="numeric">
@@ -722,7 +746,7 @@
                 <p class="otp-hint">OTP sent — check your messages</p>
             </div>
             <div id="recaptchaContainer"></div>
-            <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:1rem;" id="phoneContinueBtn" onclick="handlePhoneAuth()">Get OTP</button>
+            <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:1rem;" id="phoneContinueBtn" onclick="handlePhoneAuth()">Send OTP</button>
         </div>
 
         <!-- Google -->
@@ -731,9 +755,9 @@
             Continue with Google
         </button>
 
-        <div class="auth-or"><span>or use email</span></div>
+        <div class="auth-or"><span>or sign in with email</span></div>
 
-        <!-- Email (fallback, collapsed) -->
+        <!-- Mobile OTP (optional) -->
         <button class="email-toggle-link" onclick="toggleEmailSection()" id="emailToggleBtn">Use Email ID ▾</button>
         <div id="emailSection" style="display:none;">
             <div id="authNameField" class="auth-field" style="display:none;">
@@ -1168,8 +1192,8 @@
             <span>Total</span>
             <span class="cart-total-num" id="cartTotal">₹0</span>
         </div>
-        <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:.7rem;background:#25D366;border-color:#25D366;" onclick="orderViaWhatsApp()">
-            🛒 Place Order via WhatsApp
+        <button class="btn-primary" style="width:100%;justify-content:center;margin-bottom:.7rem;background:#25D366;border-color:#25D366;" onclick="openCheckout()">
+            🛒 Checkout Now
         </button>
         <button class="btn-outline" style="width:100%;justify-content:center" onclick="closeCart()">
             Continue Shopping
@@ -1270,6 +1294,7 @@ let currentUser    = null;
 let authMode       = 'signin';
 let confirmResult  = null;
 let recaptchaVer   = null;
+let pendingCheckoutAfterAuth = false;
 
 // ── Auth state ──────────────────────────────────────────────
 auth.onAuthStateChanged(user => {
@@ -1310,19 +1335,23 @@ function openAuthModal(mode){
     document.getElementById('authPassword').value= '';
     document.getElementById('authName').value    = '';
     document.getElementById('otpSection').style.display = 'none';
-    document.getElementById('phoneContinueBtn').textContent = 'Get OTP';
+    document.getElementById('phoneContinueBtn').textContent = 'Send OTP';
     document.getElementById('phoneContinueBtn').disabled = false;
-    document.getElementById('emailSection').style.display = 'none';
-    document.getElementById('emailToggleBtn').textContent = 'Use Email ID ▾';
+    document.getElementById('emailSection').style.display = 'block';
+    document.getElementById('emailToggleBtn').textContent = 'Use mobile OTP ▾';
+    document.getElementById('phoneSection').style.display = 'none';
     confirmResult = null;
     // Don't destroy recaptchaVer — reuse the existing widget to avoid "already rendered" error
     setAuthMode(authMode);
     document.getElementById('authModalWrap').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
-function closeAuthModal(){
+function closeAuthModal(cancel = true){
     document.getElementById('authModalWrap').classList.remove('open');
     document.body.style.overflow = '';
+    if(cancel && !currentUser){
+        pendingCheckoutAfterAuth = false;
+    }
 }
 function setAuthMode(mode){
     authMode = mode;
@@ -1335,11 +1364,36 @@ function setAuthMode(mode){
     document.getElementById('authError').textContent = '';
 }
 function toggleAuthMode(){ setAuthMode(authMode==='signin'?'signup':'signin'); }
-function toggleEmailSection(){
-    const s = document.getElementById('emailSection');
+
+async function onAuthSuccess(){
+    if(pendingCheckoutAfterAuth){
+        pendingCheckoutAfterAuth = false;
+        closeAuthModal();
+        await openCheckout();
+    }
+}
+
+function togglePhoneSection(){
+    const s = document.getElementById('phoneSection');
     const open = s.style.display==='block';
     s.style.display = open ? 'none' : 'block';
-    document.getElementById('emailToggleBtn').textContent = open ? 'Use Email ID ▾' : 'Use Email ID ▴';
+    document.getElementById('emailToggleBtn').textContent = open ? 'Use mobile OTP ▾' : 'Hide mobile OTP ▴';
+}
+
+function forgotPassword(){
+    const email = document.getElementById('authEmail').value.trim();
+    const errEl = document.getElementById('authError');
+    errEl.textContent = '';
+    if(!email){ errEl.textContent = 'Enter your email to receive a reset link.'; return; }
+    auth.sendPasswordResetEmail(email)
+        .then(()=> toast('Password reset email sent.'))
+        .catch(err=>{
+            const msgs = {
+                'auth/user-not-found': 'No account found with this email.',
+                'auth/invalid-email': 'Enter a valid email address.',
+            };
+            errEl.textContent = msgs[err.code] || err.message;
+        });
 }
 
 // ── Google sign-in ───────────────────────────────────────────
@@ -1350,6 +1404,7 @@ async function signInWithGoogle(){
         await auth.signInWithPopup(provider);
         closeAuthModal();
         toast('✓ Signed in with Google!');
+        await onAuthSuccess();
     } catch(err){
         errEl.textContent = err.code==='auth/popup-closed-by-user' ? '' : (err.message||'Google sign-in failed.');
     }
@@ -1376,8 +1431,10 @@ async function sendOTP(){
         btn.textContent = 'Verify OTP'; btn.disabled = false;
         toast('OTP sent to +91 '+phone);
     } catch(err){
-        errEl.textContent = err.message;
-        btn.textContent = 'Get OTP'; btn.disabled = false;
+        errEl.textContent = err.code === 'auth/operation-not-allowed'
+            ? 'Phone sign-in is not enabled for this Firebase project. Use email login or ask the app owner to enable phone auth.'
+            : err.message;
+        btn.textContent = 'Send OTP'; btn.disabled = false;
         confirmResult = null;
         // Clear the container so the widget can be re-rendered on next attempt
         document.getElementById('recaptchaContainer').innerHTML = '';
@@ -1395,6 +1452,7 @@ async function verifyOTP(){
         await confirmResult.confirm(otp);
         closeAuthModal();
         toast('✓ Phone verified!');
+        await onAuthSuccess();
     } catch(err){
         errEl.textContent = 'Invalid OTP. Please try again.';
         btn.textContent = 'Verify OTP'; btn.disabled = false;
@@ -1420,6 +1478,7 @@ async function submitAuth(){
         }
         closeAuthModal();
         toast('✓ '+(authMode==='signup'?'Account created!':'Signed in!'));
+        await onAuthSuccess();
     } catch(err){
         const msgs = {
             'auth/email-already-in-use':'This email is already registered.',
@@ -1440,7 +1499,13 @@ let savedAddress  = {};
 
 async function openCheckout(){
     if(!cart.length){ toast('Your cart is empty!'); return; }
-    if(!currentUser){ openAuthModal(); toast('Please sign in to continue.'); return; }
+    if(!currentUser){
+        pendingCheckoutAfterAuth = true;
+        closeCart();
+        openAuthModal('signin');
+        toast('Please sign in to continue to checkout.');
+        return;
+    }
     checkoutStep = 1;
     showCheckoutStep(1);
     // Pre-fill from auth
