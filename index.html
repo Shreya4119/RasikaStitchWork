@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>रासिका Stitch Works – Exquisite Indian Embroidery & Textiles</title>
+    <title>रसिका Stitch Works – Exquisite Indian Embroidery & Textiles</title>
     <meta name="description" content="Shop exquisite hand-embroidered sarees, bridal blouses, suits and embroidery art by Rasika Stitch Works. 15+ years of craftsmanship. Pan-India delivery.">
     <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -474,6 +474,64 @@
             .hero-stats { gap:1.5rem; }
             .about-feats { grid-template-columns:1fr; }
         }
+
+        /* ── PRODUCT GALLERY (multi-photo + hover-zoom) ── */
+        .modal-gallery {
+            display:flex; flex-direction:column; gap:.65rem;
+        }
+        .zoom-wrap {
+            position:relative; border-radius:12px; overflow:hidden;
+            height:340px; background:var(--cream);
+            cursor:crosshair; user-select:none;
+        }
+        .zoom-wrap img.gal-main {
+            width:100%; height:100%; object-fit:cover; display:block;
+            transition:transform .07s ease-out;
+            transform-origin:50% 50%;
+            will-change:transform;
+            pointer-events:none;
+            -webkit-user-drag:none;
+        }
+        .gal-arrow {
+            position:absolute; top:50%; transform:translateY(-50%);
+            background:rgba(255,255,255,.9); border:none;
+            width:34px; height:34px; border-radius:50%;
+            font-size:1.3rem; cursor:pointer; z-index:5;
+            display:flex; align-items:center; justify-content:center;
+            box-shadow:0 2px 8px rgba(0,0,0,.18); transition:background .15s;
+            line-height:1;
+        }
+        .gal-arrow:hover { background:white; }
+        .gal-prev { left:10px; }
+        .gal-next { right:10px; }
+        .gal-arrow.hidden { display:none; }
+        .zoom-badge {
+            position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+            background:rgba(0,0,0,.48); color:white; font-size:.68rem;
+            font-family:'Inter',sans-serif; padding:.22rem .7rem; border-radius:12px;
+            pointer-events:none; letter-spacing:.3px; white-space:nowrap;
+            transition:opacity .3s;
+        }
+        .zoom-wrap.zoomed .zoom-badge { opacity:0; }
+        .gal-thumbs {
+            display:flex; gap:.45rem; flex-wrap:wrap;
+        }
+        .gal-thumb {
+            width:58px; height:58px; border-radius:8px; overflow:hidden;
+            border:2px solid var(--border); cursor:pointer;
+            transition:border-color .18s, transform .15s; flex-shrink:0;
+        }
+        .gal-thumb:hover { transform:scale(1.06); }
+        .gal-thumb.active { border-color:var(--crimson); }
+        .gal-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        .gal-count {
+            font-size:.72rem; color:var(--muted); font-family:'Inter',sans-serif;
+            text-align:right; padding-right:.1rem;
+        }
+        @media(max-width:768px){
+            .zoom-wrap { height:260px; }
+            .gal-thumb { width:50px; height:50px; }
+        }
     </style>
 </head>
 <body>
@@ -488,7 +546,7 @@
              onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex'">
         <div id="logoFallback" style="display:none; width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--crimson),#c4415a); align-items:center; justify-content:center; font-size:1.3rem;">🧵</div>
         <div>
-            <div class="logo-name">रासिका Stitch Works</div>
+            <div class="logo-name">रसिका Stitch Works</div>
             <div class="logo-tag">Traditional Craftsmanship</div>
         </div>
     </div>
@@ -511,7 +569,7 @@
 <section id="home">
     <div>
         <span class="hero-badge">✨ Traditional Craftsmanship</span>
-        <h1 class="hero-h1">रासिका<br><span>Stitchwork</span></h1>
+        <h1 class="hero-h1">रसिका<br><span>Stitch Works</span></h1>
         <p class="hero-subtitle">Exquisite Indian Embroidery &amp; Textiles</p>
         <p class="hero-desc">Discover the timeless beauty of hand-stitched embroidery, traditional sarees, and custom designs that celebrate India's rich textile heritage.</p>
         <div class="hero-btns">
@@ -668,9 +726,9 @@
             </div>
         </div>
         <div class="about-content">
-            <span class="about-badge">About रासिका Stitch Works</span>
+            <span class="about-badge">About रसिका Stitch Works</span>
             <h2>Celebrating 15 Years of<br><span>Embroidery Excellence</span></h2>
-            <p>रासिका Stitch Works was founded with a passion for preserving and promoting India's rich embroidery heritage. What started as a small home workshop has grown into an award-recognised name trusted by individual customers and businesses across India.</p>
+            <p>रसिका Stitch Works was founded with a passion for preserving and promoting India's rich embroidery heritage. What started as a small home workshop has grown into an award-recognised name trusted by individual customers and businesses across India.</p>
             <p>We specialise in hand-embroidered sarees, custom bridal blouses, suits & kurties, rangoli mats, wall art, and bespoke embroidery — each piece crafted with precision and love for the tradition.</p>
             <div class="about-feats">
                 <div class="afeat">
@@ -793,7 +851,7 @@
                 <img src="images/logo.png" alt="Rasika Stitch Works" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"
                      onerror="this.style.display='none';this.parentElement.textContent='🧵'">
             </div>
-            <div class="foot-brand-name">रासिका Stitch Works</div>
+            <div class="foot-brand-name">रसिका Stitch Works</div>
             <p>Celebrating the artistry of Indian embroidery and traditional craftsmanship since 2009.</p>
         </div>
         <div class="foot-col">
@@ -822,7 +880,7 @@
         </div>
     </div>
     <hr class="foot-hr">
-    <div class="foot-copy">© 2026 रासिका Stitch Works. All rights reserved.</div>
+    <div class="foot-copy">© 2026 रसिका Stitch Works. All rights reserved.</div>
 </footer>
 
 <!-- ======== CART SIDEBAR ======== -->
@@ -886,29 +944,18 @@
             <div class="fg"><label>Price (₹)</label><input type="number" id="adPrice" placeholder="e.g. 2500"></div>
             <div class="fg" style="grid-column:1/-1"><label>Description</label><textarea id="adDesc" style="min-height:70px" placeholder="Short product description..."></textarea></div>
             <div class="fg" style="grid-column:1/-1">
-                <label>Product Image</label>
+                <label>Product Photos <span style="color:var(--muted);font-size:.76rem;font-family:'Inter',sans-serif;font-weight:400;">(up to 6 — first photo is the main image)</span></label>
                 <div style="display:flex;flex-direction:column;gap:10px;">
-                    <!-- Option 1: Upload from device -->
-                    <div style="border:2px dashed var(--border);border-radius:12px;padding:1.2rem;text-align:center;background:var(--cream);cursor:pointer;transition:border-color .2s;" onclick="document.getElementById('adImgFile').click()" id="imgDropZone">
-                        <div style="font-size:2rem;margin-bottom:4px;">📸</div>
-                        <div style="font-size:.85rem;color:var(--muted);font-family:'Inter',sans-serif;">
-                            <strong style="color:var(--crimson);">Click to upload a photo</strong> from your phone or computer
-                        </div>
-                        <div id="imgFileName" style="font-size:.78rem;color:var(--teal);margin-top:6px;font-family:'Inter',sans-serif;"></div>
-                    </div>
-                    <input type="file" id="adImgFile" accept="image/*" style="display:none" onchange="handleImgUpload(this)">
-                    <!-- Preview -->
-                    <div id="imgPreviewWrap" style="display:none;text-align:center;">
-                        <img id="imgPreview" style="max-height:120px;border-radius:10px;border:2px solid var(--border);object-fit:cover;" alt="Preview">
-                        <button onclick="clearImgUpload()" style="display:block;margin:.5rem auto 0;font-size:.75rem;color:var(--crimson);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;">✕ Remove photo</button>
-                    </div>
-                    <!-- Option 2: URL fallback -->
-                    <div style="display:flex;align-items:center;gap:8px;">
+                    <!-- Multi-photo slots -->
+                    <div id="multiImgSlots" style="display:flex;flex-wrap:wrap;gap:12px;min-height:36px;padding-bottom:6px;"></div>
+                    <button type="button" id="addImgSlotBtn" onclick="addImgSlot()" style="align-self:flex-start;font-size:.8rem;color:var(--teal);background:none;border:1.5px dashed var(--teal);border-radius:8px;padding:.35rem .85rem;cursor:pointer;font-family:'Inter',sans-serif;">+ Add photo</button>
+                    <!-- URL fallback -->
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:2px;">
                         <div style="flex:1;height:1px;background:var(--border);"></div>
-                        <span style="font-size:.75rem;color:var(--muted);font-family:'Inter',sans-serif;">or paste an image URL</span>
+                        <span style="font-size:.74rem;color:var(--muted);font-family:'Inter',sans-serif;">or paste image URL(s), comma-separated</span>
                         <div style="flex:1;height:1px;background:var(--border);"></div>
                     </div>
-                    <input type="url" id="adImg" placeholder="https://... (optional if photo uploaded above)" style="font-size:.85rem;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;color:var(--text);background:white;">
+                    <input type="text" id="adImg" placeholder="https://... , https://... (optional)" style="font-size:.85rem;padding:.6rem .9rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;color:var(--text);background:white;">
                 </div>
             </div>
         </div>
@@ -1110,13 +1157,91 @@ function orderViaWhatsApp(){
     closeCart();
 }
 
+// ── PRODUCT GALLERY ───────────────────────────────────────────────────
+let galImgs = [], galIdx = 0;
+
+function setGalImg(idx){
+    galIdx = (idx + galImgs.length) % galImgs.length;
+    const img = document.getElementById('galMain');
+    if(img){
+        img.src = galImgs[galIdx];
+        // reset zoom
+        img.style.transform = '';
+        img.style.transformOrigin = '50% 50%';
+        const wrap = document.getElementById('galWrap');
+        if(wrap) wrap.classList.remove('zoomed');
+    }
+    document.querySelectorAll('.gal-thumb').forEach((t,i)=>t.classList.toggle('active',i===galIdx));
+    const cnt = document.getElementById('galCount');
+    if(cnt) cnt.textContent = `${galIdx+1} / ${galImgs.length}`;
+}
+
+function galMove(dir){ setGalImg(galIdx + dir); }
+
+function initGalZoom(){
+    const wrap = document.getElementById('galWrap');
+    if(!wrap) return;
+    const img  = document.getElementById('galMain');
+    if(!img)  return;
+    const SCALE = 2.8;
+
+    wrap.addEventListener('mouseenter', ()=>{
+        img.style.transition = 'transform .07s ease-out';
+        img.style.transform  = `scale(${SCALE})`;
+        wrap.classList.add('zoomed');
+    });
+    wrap.addEventListener('mousemove', e=>{
+        const r = wrap.getBoundingClientRect();
+        const x = ((e.clientX - r.left) / r.width  * 100).toFixed(1);
+        const y = ((e.clientY - r.top)  / r.height * 100).toFixed(1);
+        img.style.transformOrigin = `${x}% ${y}%`;
+    });
+    wrap.addEventListener('mouseleave', ()=>{
+        img.style.transform       = 'scale(1)';
+        img.style.transformOrigin = '50% 50%';
+        wrap.classList.remove('zoomed');
+    });
+
+    // Touch swipe between images
+    let tx0 = null;
+    wrap.addEventListener('touchstart', e=>{ tx0 = e.touches[0].clientX; }, {passive:true});
+    wrap.addEventListener('touchend',   e=>{
+        if(tx0 === null || galImgs.length < 2) return;
+        const dx = e.changedTouches[0].clientX - tx0;
+        if(Math.abs(dx) > 40) galMove(dx < 0 ? 1 : -1);
+        tx0 = null;
+    });
+}
+
 // ── PRODUCT MODAL ─────────────────────────────────────────────────────
 function openProduct(pid){
     const p = products.find(x=>x.id===pid);
     modalQty = 1;
+    galImgs  = (p.imgs && p.imgs.length) ? [...p.imgs] : [p.img];
+    galIdx   = 0;
+
+    const multi = galImgs.length > 1;
+    const thumbsHTML = multi
+        ? `<div class="gal-thumbs">${galImgs.map((src,i)=>`
+            <div class="gal-thumb${i===0?' active':''}" onclick="setGalImg(${i})">
+                <img src="${sanitize(src)}" alt="View ${i+1}"
+                     onerror="this.parentElement.style.display='none'">
+            </div>`).join('')}</div>
+           <div class="gal-count" id="galCount">1 / ${galImgs.length}</div>`
+        : '';
+
     document.getElementById('modalContent').innerHTML=`
-        <div class="modal-img">
-            <img src="${sanitize(p.img)}" alt="${sanitize(p.name)}" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#c4415a,#8B1A2E)'">
+        <div class="modal-gallery">
+            <div class="zoom-wrap" id="galWrap">
+                <img class="gal-main" id="galMain"
+                     src="${sanitize(galImgs[0])}" alt="${sanitize(p.name)}"
+                     onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#c4415a,#8B1A2E)'"
+                     draggable="false">
+                <button class="gal-arrow gal-prev${multi?'':' hidden'}" onclick="galMove(-1)">&#8249;</button>
+                <button class="gal-arrow gal-next${multi?'':' hidden'}" onclick="galMove(1)">&#8250;</button>
+                <div class="zoom-badge">🔍 Move cursor to explore</div>
+            </div>
+            ${thumbsHTML}
         </div>
         <div class="modal-det">
             <h2>${sanitize(p.name)}</h2>
@@ -1141,6 +1266,7 @@ function openProduct(pid){
         </div>`;
     document.getElementById('modalWrap').classList.add('open');
     document.body.style.overflow='hidden';
+    initGalZoom();
 }
 function closeModal(){ document.getElementById('modalWrap').classList.remove('open'); document.body.style.overflow=''; }
 function closeModalOverlay(e){ if(e.target===document.getElementById('modalWrap')) closeModal(); }
@@ -1197,6 +1323,7 @@ document.addEventListener('keydown',e=>{
 function showAdmin(){
     renderAdminList();
     renderAdminSlides();
+    initImgSlots();
     document.getElementById('adminPanel').style.display='block';
 }
 
@@ -1210,14 +1337,81 @@ function renderAdminList(){
         </div>`).join('');
 }
 
+/* ── multi-photo slots state ── */
+let imgSlots = []; // each entry: { b64: '' }
+
+function initImgSlots(){
+    imgSlots = [];
+    renderImgSlots();
+    addImgSlot(); // start with one empty slot
+}
+
+function addImgSlot(){
+    if(imgSlots.length >= 6){ toast('Maximum 6 photos per product.'); return; }
+    const idx = imgSlots.length;
+    imgSlots.push({ b64: '' });
+    renderImgSlots();
+    // auto-open file picker for the new blank slot
+    setTimeout(()=>{ const inp = document.getElementById('slotFile'+idx); if(inp) inp.click(); }, 60);
+}
+
+function renderImgSlots(){
+    const container = document.getElementById('multiImgSlots');
+    if(!container) return;
+    container.innerHTML = imgSlots.map((slot, i) => {
+        const isMain = i === 0;
+        const wrapStyle = 'position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:4px;';
+        const mainLabel = isMain ? `<div style="font-size:.62rem;color:var(--teal);font-family:'Inter',sans-serif;">Main photo</div>` : '';
+        const filled = slot.b64
+            ? `<img src="${slot.b64}" style="width:86px;height:86px;object-fit:cover;border-radius:10px;border:2px solid var(--teal);display:block;">`
+            : `<div onclick="document.getElementById('slotFile${i}').click()" style="width:86px;height:86px;border:2px dashed var(--border);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:var(--cream);">
+                 <div style="font-size:1.5rem;line-height:1;">📸</div>
+                 <div style="font-size:.62rem;color:var(--muted);font-family:'Inter',sans-serif;margin-top:3px;">Tap to upload</div>
+               </div>`;
+        return `<div style="${wrapStyle}">
+                    ${filled}
+                    <input type="file" id="slotFile${i}" accept="image/*" style="display:none" onchange="handleSlotUpload(this,${i})">
+                    <button onclick="removeImgSlot(${i})" title="Remove" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--crimson);color:white;border:none;font-size:.72rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>
+                    ${mainLabel}
+                </div>`;
+    }).join('');
+    const btn = document.getElementById('addImgSlotBtn');
+    if(btn) btn.style.display = imgSlots.length >= 6 ? 'none' : '';
+}
+
+function handleSlotUpload(input, idx){
+    const file = input.files[0];
+    if(!file) return;
+    if(file.size > 5*1024*1024){ toast('Image too large — use a photo under 5 MB.'); input.value=''; return; }
+    const reader = new FileReader();
+    reader.onload = e => { imgSlots[idx].b64 = e.target.result; renderImgSlots(); };
+    reader.readAsDataURL(file);
+}
+
+function removeImgSlot(idx){
+    imgSlots.splice(idx, 1);
+    renderImgSlots();
+}
+
+function clearAllImgSlots(){
+    imgSlots = [];
+    renderImgSlots();
+}
+
 function adminAddProduct(){
     const name = document.getElementById('adName').value.trim();
     const price = parseInt(document.getElementById('adPrice').value);
     if(!name||!price){ toast('Please fill in name and price.'); return; }
-    // Use uploaded image (base64) first, fallback to URL, then placeholder
-    const uploadedImg = document.getElementById('imgPreview').getAttribute('data-b64') || '';
-    const urlImg = document.getElementById('adImg').value.trim();
-    const finalImg = uploadedImg || urlImg || 'https://t3.ftcdn.net/jpg/03/82/04/18/500_F_382041800_YLXN1qRHpSxKPDeVZDP1ioZhcrhTVbJt.jpg';
+
+    // Collect uploaded photos (base64)
+    const uploadedImgs = imgSlots.map(s=>s.b64).filter(Boolean);
+    // URL fallback — comma-separated list
+    const urlInput = document.getElementById('adImg').value.trim();
+    const urlImgs  = urlInput ? urlInput.split(',').map(u=>u.trim()).filter(Boolean) : [];
+    const allImgs  = [...uploadedImgs, ...urlImgs];
+    const placeholder = 'https://t3.ftcdn.net/jpg/03/82/04/18/500_F_382041800_YLXN1qRHpSxKPDeVZDP1ioZhcrhTVbJt.jpg';
+    const finalImgs = allImgs.length ? allImgs : [placeholder];
+
     products.push({
         id:nextId++,
         name,
@@ -1225,38 +1419,15 @@ function adminAddProduct(){
         type:     document.getElementById('adType').value,
         price,
         desc:     document.getElementById('adDesc').value || 'Handcrafted with care.',
-        img:      finalImg
+        img:      finalImgs[0],
+        imgs:     finalImgs
     });
     renderCatalogue();
     renderAdminList();
     ['adName','adPrice','adDesc','adImg'].forEach(id=>document.getElementById(id).value='');
-    clearImgUpload();
+    clearAllImgSlots();
+    addImgSlot(); // reset to one fresh empty slot
     toast('✓ Product added!');
-}
-
-function handleImgUpload(input){
-    const file = input.files[0];
-    if(!file) return;
-    if(file.size > 5 * 1024 * 1024){ toast('Image too large — please use a photo under 5 MB.'); input.value=''; return; }
-    const reader = new FileReader();
-    reader.onload = function(e){
-        const b64 = e.target.result;
-        document.getElementById('imgPreview').src = b64;
-        document.getElementById('imgPreview').setAttribute('data-b64', b64);
-        document.getElementById('imgPreviewWrap').style.display = 'block';
-        document.getElementById('imgFileName').textContent = '✓ ' + file.name;
-        document.getElementById('imgDropZone').style.borderColor = 'var(--teal)';
-    };
-    reader.readAsDataURL(file);
-}
-
-function clearImgUpload(){
-    document.getElementById('adImgFile').value = '';
-    document.getElementById('imgPreview').src = '';
-    document.getElementById('imgPreview').removeAttribute('data-b64');
-    document.getElementById('imgPreviewWrap').style.display = 'none';
-    document.getElementById('imgFileName').textContent = '';
-    document.getElementById('imgDropZone').style.borderColor = 'var(--border)';
 }
 
 function adminDelete(pid){
