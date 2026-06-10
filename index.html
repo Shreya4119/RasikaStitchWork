@@ -1423,6 +1423,7 @@ async function sendOTP(){
     btn.textContent = 'Sending…'; btn.disabled = true;
     try {
         if(!recaptchaVer){
+            document.getElementById('recaptchaContainer').innerHTML = '';
             recaptchaVer = new firebase.auth.RecaptchaVerifier('recaptchaContainer',{size:'invisible'});
             await recaptchaVer.render();
         }
@@ -1450,6 +1451,11 @@ async function verifyOTP(){
     btn.textContent = 'Verifying…'; btn.disabled = true;
     try {
         await confirmResult.confirm(otp);
+        if(recaptchaVer){
+            try{ recaptchaVer.clear(); }catch(e){}
+            recaptchaVer = null;
+            document.getElementById('recaptchaContainer').innerHTML = '';
+        }
         closeAuthModal();
         toast('✓ Phone verified!');
         await onAuthSuccess();
