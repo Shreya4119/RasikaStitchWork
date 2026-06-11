@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>रसिका Stitch Works – Exquisite Indian Embroidery & Textiles</title>
-    <meta name="description" content="Shop exquisite hand-embroidered sarees, bridal blouses, suits and embroidery art by Rasika Stitch Works. 15+ years of craftsmanship. Pan-India delivery.">
+    <meta name="description" content="Shop exquisite hand-embroidered sarees, bridal blouses, suits and embroidery art by Rasika Stitch Works. 25+ years of craftsmanship. Pan-India delivery.">
     <link rel="icon" type="image/png" href="images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -668,6 +668,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -822,10 +823,10 @@
             <div id="reviewItems" style="border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem;"></div>
             <div id="reviewAddress" style="background:#f0f7f4;border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:.85rem;color:var(--text);"></div>
             <div style="background:#e8f5ff;border-radius:8px;padding:.65rem 1rem;font-size:.8rem;color:#0f4c81;margin-bottom:1rem;">
-                💬 Your order will be sent via WhatsApp. The owner will confirm and share a payment link.
+                🔒 Pay securely online via Razorpay (Cards, UPI, Netbanking, Wallets).
             </div>
             <div class="auth-error" id="checkoutErr2"></div>
-            <button class="btn-primary" style="width:100%;justify-content:center;background:#25D366;" id="placeOrderBtn" onclick="placeOrder()">🛒 Place Order via WhatsApp →</button>
+            <button class="btn-primary" style="width:100%;justify-content:center;" id="placeOrderBtn" onclick="placeOrder()">🔒 Pay ₹<span id="payAmount"></span> Now →</button>
             <button onclick="showCheckoutStep(1)" style="width:100%;margin-top:.6rem;background:none;border:1px solid var(--border);border-radius:8px;padding:.65rem;cursor:pointer;font-family:'Inter',sans-serif;font-size:.88rem;color:var(--muted);">← Back to Address</button>
         </div>
 
@@ -865,15 +866,15 @@
         </div>
         <div class="hero-stats">
             <div>
-                <div class="stat-num">500+</div>
+                <div class="stat-num">1000+</div>
                 <div class="stat-lbl">Designs</div>
             </div>
             <div>
-                <div class="stat-num">1000+</div>
+                <div class="stat-num">100%</div>
                 <div class="stat-lbl">Happy Clients</div>
             </div>
             <div>
-                <div class="stat-num">15+</div>
+                <div class="stat-num">25+</div>
                 <div class="stat-lbl">Years Experience</div>
             </div>
         </div>
@@ -1283,7 +1284,7 @@ const db   = firebase.firestore();
 
 const razorpayConfig = {
     enabled: false,
-    customerSupportPhone: '+918308201964',
+    customerSupportPhone: '+919356955036',
 };
 
 let currentUser    = null;
@@ -1581,11 +1582,16 @@ function goToReview(){
         <div style="font-size:.84rem;">${sanitize(savedAddress.name)} · +91 ${sanitize(savedAddress.phone)}</div>
         <div style="font-size:.84rem;">${sanitize(savedAddress.line1)}${savedAddress.line2?', '+sanitize(savedAddress.line2):''}</div>
         <div style="font-size:.84rem;">${sanitize(savedAddress.city)}, ${sanitize(savedAddress.state)} – ${sanitize(savedAddress.pincode)}</div>`;
+    document.getElementById('payAmount').textContent = total.toLocaleString('en-IN');
     showCheckoutStep(2);
 }
+const RAZORPAY_KEY_ID = 'rzp_test_SzzPEhcI6wApYD';
+
 async function placeOrder(){
     const btn = document.getElementById('placeOrderBtn');
-    btn.textContent='Placing order…'; btn.disabled=true;
+    const errEl = document.getElementById('checkoutErr2');
+    errEl.textContent = '';
+    btn.textContent='Opening payment…'; btn.disabled=true;
     const total   = cart.reduce((s,i)=>s+i.price*i.qty, 0);
     const now     = new Date();
     const dp      = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
@@ -1599,23 +1605,73 @@ async function placeOrder(){
         address: savedAddress,
         items: cart.map(i=>({id:i.id,name:i.name,qty:i.qty,price:i.price})),
         total,
-        status:'pending',
+        status:'pending_payment',
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
+
+    let orderRef = null;
     try {
-        await db.collection('orders').add(orderData);
+        orderRef = await db.collection('orders').add(orderData);
         await db.collection('users').doc(currentUser.uid).set({address:savedAddress},{merge:true});
     } catch(e){ console.warn('Firestore:',e); }
 
-    openWhatsAppOrder(orderId, total);
-    completeOrder(orderData);
+    if(typeof Razorpay === 'undefined'){
+        errEl.textContent = 'Payment gateway failed to load. Check your internet connection and try again.';
+        btn.textContent='🔒 Pay ₹'+total.toLocaleString('en-IN')+' Now →'; btn.disabled=false;
+        return;
+    }
+
+    const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: total*100, // paise
+        currency: 'INR',
+        name: 'Rasika Stitch Works',
+        description: `Order ${orderId}`,
+        prefill: {
+            name: currentUser.displayName||savedAddress.name,
+            email: currentUser.email||'',
+            contact: currentUser.phoneNumber||'+91'+savedAddress.phone,
+        },
+        notes: { orderId },
+        theme: { color: '#CC5500' },
+        handler: async function(response){
+            try {
+                if(orderRef){
+                    await orderRef.update({
+                        status:'paid',
+                        paymentId: response.razorpay_payment_id,
+                        paidAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    });
+                }
+            } catch(e){ console.warn('Firestore update:',e); }
+            openWhatsAppOrder(orderId, total, response.razorpay_payment_id);
+            completeOrder(orderData);
+        },
+        modal: {
+            ondismiss: function(){
+                btn.textContent='🔒 Pay ₹'+total.toLocaleString('en-IN')+' Now →';
+                btn.disabled=false;
+                errEl.textContent = 'Payment was cancelled. Your order is saved — you can try paying again.';
+            }
+        }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.on('payment.failed', function(response){
+        btn.textContent='🔒 Pay ₹'+total.toLocaleString('en-IN')+' Now →';
+        btn.disabled=false;
+        errEl.textContent = 'Payment failed: '+(response.error && response.error.description ? response.error.description : 'Please try again.');
+    });
+    btn.textContent='🔒 Pay ₹'+total.toLocaleString('en-IN')+' Now →'; btn.disabled=false;
+    rzp.open();
 }
 
-function openWhatsAppOrder(orderId, total){
+function openWhatsAppOrder(orderId, total, paymentId){
     const lines = cart.map(i=>`• ${i.name} (x${i.qty}) — ₹${(i.price*i.qty).toLocaleString('en-IN')}`);
     const msg = [
         '🧵 *New Order — रसिका Stitch Works*',
         `*Order ID:* ${orderId}`,
+        paymentId ? `*Payment:* ✅ Paid (ID: ${paymentId})` : null,
         `*Customer:* ${savedAddress.name}`,
         `*Phone:* +91 ${savedAddress.phone}`,
         currentUser.email ? `*Email:* ${currentUser.email}` : null,
@@ -1624,9 +1680,9 @@ function openWhatsAppOrder(orderId, total){
         '*Delivery Address:*',
         `${savedAddress.line1}${savedAddress.line2?', '+savedAddress.line2:''}`,
         `${savedAddress.city}, ${savedAddress.state} – ${savedAddress.pincode}`,'',
-        'Please confirm and send payment link. 🙏'
+        paymentId ? 'Payment received — please process this order. 🙏' : 'Please confirm and send payment link. 🙏'
     ].filter(l=>l!==null).join('\n');
-    window.open(`https://wa.me/918308201964?text=${encodeURIComponent(msg)}`,'_blank');
+    window.open(`https://wa.me/919356955036?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 function completeOrder(orderData){
@@ -1654,10 +1710,19 @@ async function openOrderHistory(){
             return;
         }
         header.textContent = `My Orders (${snapshot.size})`;
+        const statusLabels = {
+            'pending_payment': { text:'Payment Pending', color:'#b8860b' },
+            'paid':            { text:'✅ Paid',          color:'#1f8a4c' },
+            'shipped':         { text:'📦 Shipped',       color:'#1565c0' },
+            'delivered':       { text:'✅ Delivered',     color:'#1f8a4c' },
+            'cancelled':       { text:'❌ Cancelled',     color:'#c0392b' },
+            'pending':         { text:'Pending',          color:'#b8860b' },
+        };
         list.innerHTML = snapshot.docs.map(doc => {
             const order = doc.data();
+            const st = statusLabels[order.status] || { text: sanitize(order.status||'pending'), color:'#1565c0' };
             return `<div class="auth-field" style="border:1px solid var(--border);border-radius:10px;padding:.9rem;margin-bottom:.75rem;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem;"><strong>Order ${sanitize(order.orderId||doc.id)}</strong><span style="color:#1565c0;font-weight:700;">${sanitize(order.paymentStatus||'pending')}</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem;"><strong>Order ${sanitize(order.orderId||doc.id)}</strong><span style="color:${st.color};font-weight:700;">${st.text}</span></div>
                 <div style="font-size:.85rem;color:var(--text);margin-bottom:.35rem;">Total: ₹${(order.total||0).toLocaleString('en-IN')}</div>
                 <div style="font-size:.82rem;color:var(--muted);">Delivery: ${sanitize(order.address?.city||'N/A')}, ${sanitize(order.address?.state||'')}</div>
                 <div style="font-size:.82rem;color:var(--muted);">Placed on: ${order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString() : 'N/A'}</div>
@@ -1857,7 +1922,7 @@ function orderViaWhatsApp(){
         '',
         'Please confirm availability and share payment details. Thank you! 🙏'
     ].join('\n');
-    const url = `https://wa.me/918308201964?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/919356955036?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
     // Save order to Firestore
     db.collection('orders').add({
@@ -2021,7 +2086,7 @@ function submitForm(e){
         message,
     ].filter(l => l !== null).join('\n');
 
-    const url = `https://wa.me/918308201964?text=${encodeURIComponent(text)}`;
+    const url = `https://wa.me/919356955036?text=${encodeURIComponent(text)}`;
     window.open(url, '_blank');
     toast('✓ Opening WhatsApp to send your message!');
     e.target.reset();
@@ -2031,9 +2096,9 @@ function submitForm(e){
 let adminBuffer='';
 document.addEventListener('keydown',e=>{
     if(document.activeElement.tagName==='INPUT'||document.activeElement.tagName==='TEXTAREA') return;
-    adminBuffer=(adminBuffer+e.key).slice(-10);
+    adminBuffer=(adminBuffer+e.key).slice(-9);
     // ⚠️ OWNER: Change this trigger word before going live. Tell no one else.
-    if(adminBuffer.endsWith('rasika786')){ showAdmin(); adminBuffer=''; }
+    if(adminBuffer.endsWith('rasika25')){ showAdmin(); adminBuffer=''; }
 });
 
 function showAdmin(){
@@ -2302,7 +2367,7 @@ initSlideshow();
 </script>
 
 <!-- ── FLOATING WHATSAPP BUTTON ── -->
-<a href="https://wa.me/918308201964?text=Hi%2C%20I%27m%20interested%20in%20your%20products.%20Can%20you%20share%20more%20details%3F"
+<a href="https://wa.me/919356955036?text=Hi%2C%20I%27m%20interested%20in%20your%20products.%20Can%20you%20share%20more%20details%3F"
    target="_blank" title="Chat with us on WhatsApp"
    style="position:fixed;bottom:24px;right:24px;z-index:9999;
           width:58px;height:58px;border-radius:50%;background:#25D366;
