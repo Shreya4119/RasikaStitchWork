@@ -1507,8 +1507,11 @@ let checkoutStep = 1;
 let savedAddress  = {};
 
 async function openCheckout(){
+  try {
     if(!cart.length){ toast('Your cart is empty!'); return; }
     closeCart();
+    // Fall back to auth.currentUser in case onAuthStateChanged hasn't fired yet
+    currentUser = currentUser || (auth && auth.currentUser);
     if(!currentUser){
         pendingCheckoutAfterAuth = true;
         openAuthModal('signin');
@@ -1538,10 +1541,14 @@ async function openCheckout(){
                 document.getElementById('savedAddrBanner').style.display = 'block';
             }
         }
-    } catch(e){}
+    } catch(e){ console.warn('Load address failed:', e); }
     document.getElementById('checkoutErr1').textContent = '';
     document.getElementById('checkoutWrap').classList.add('open');
     document.body.style.overflow = 'hidden';
+  } catch(e){
+    console.error('openCheckout failed:', e);
+    toast('Could not open checkout: '+e.message);
+  }
 }
 function closeCheckout(){
     document.getElementById('checkoutWrap').classList.remove('open');
