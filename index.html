@@ -826,7 +826,7 @@
                 🔒 Pay securely online via Razorpay (Cards, UPI, Netbanking, Wallets).
             </div>
             <div class="auth-error" id="checkoutErr2"></div>
-            <button class="btn-primary" style="width:100%;justify-content:center;" id="placeOrderBtn" onclick="placeOrder()">🔒 Pay ₹<span id="payAmount"></span> Now →</button>
+            <button class="btn-primary" style="width:100%;justify-content:center;" id="placeOrderBtn" onclick="placeOrder()">🔒 Pay Now →</button>
             <button onclick="showCheckoutStep(1)" style="width:100%;margin-top:.6rem;background:none;border:1px solid var(--border);border-radius:8px;padding:.65rem;cursor:pointer;font-family:'Inter',sans-serif;font-size:.88rem;color:var(--muted);">← Back to Address</button>
         </div>
 
@@ -1591,7 +1591,8 @@ function goToReview(){
         <div style="font-size:.84rem;">${sanitize(savedAddress.name)} · +91 ${sanitize(savedAddress.phone)}</div>
         <div style="font-size:.84rem;">${sanitize(savedAddress.line1)}${savedAddress.line2?', '+sanitize(savedAddress.line2):''}</div>
         <div style="font-size:.84rem;">${sanitize(savedAddress.city)}, ${sanitize(savedAddress.state)} – ${sanitize(savedAddress.pincode)}</div>`;
-    document.getElementById('payAmount').textContent = total.toLocaleString('en-IN');
+    const placeBtn = document.getElementById('placeOrderBtn');
+    if(placeBtn) placeBtn.textContent = `🔒 Pay ₹${total.toLocaleString('en-IN')} Now →`;
     showCheckoutStep(2);
 }
 const RAZORPAY_KEY_ID = 'rzp_test_SzzPEhcI6wApYD';
@@ -1637,11 +1638,11 @@ async function placeOrder(){
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     };
 
+    // Save order to Firestore without blocking Razorpay from opening
     let orderRef = null;
-    try {
-        orderRef = await db.collection('orders').add(orderData);
-        await db.collection('users').doc(currentUser.uid).set({address:savedAddress},{merge:true});
-    } catch(e){ console.warn('Firestore:',e); }
+    db.collection('orders').add(orderData)
+        .then(ref => { orderRef = ref; return db.collection('users').doc(currentUser.uid).set({address:savedAddress},{merge:true}); })
+        .catch(e => console.warn('Firestore:', e));
 
     if(typeof Razorpay === 'undefined'){
         try {
