@@ -1364,6 +1364,8 @@ function setAuthMode(mode){
 function toggleAuthMode(){ setAuthMode(authMode==='signin'?'signup':'signin'); }
 
 async function onAuthSuccess(){
+    // onAuthStateChanged may not have fired yet — make sure currentUser is set before proceeding
+    currentUser = auth.currentUser || currentUser;
     if(pendingCheckoutAfterAuth){
         pendingCheckoutAfterAuth = false;
         closeAuthModal();
