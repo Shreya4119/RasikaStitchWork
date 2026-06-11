@@ -1725,8 +1725,7 @@ function openWhatsAppOrder(orderId, total, paymentId){
 
 function completeOrder(orderData){
     cart = [];
-    saveCart();
-    updateCartUI();
+    syncCart();
     document.getElementById('confirmOrderId').textContent = 'Order ID: '+orderData.orderId;
     showCheckoutStep(3);
     const btn = document.getElementById('placeOrderBtn');
