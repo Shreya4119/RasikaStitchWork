@@ -562,7 +562,7 @@
         .auth-dropdown button:hover { background:var(--cream); }
         /* Auth + Checkout modals */
         #authModalWrap, #checkoutWrap {
-            display:none; position:fixed; inset:0; z-index:2000;
+            display:none; position:fixed; inset:0; z-index:2500;
             background:rgba(43,26,8,.55); align-items:center; justify-content:center;
             padding:1rem;
         }
@@ -1508,9 +1508,9 @@ let savedAddress  = {};
 
 async function openCheckout(){
     if(!cart.length){ toast('Your cart is empty!'); return; }
+    closeCart();
     if(!currentUser){
         pendingCheckoutAfterAuth = true;
-        closeCart();
         openAuthModal('signin');
         toast('Please sign in to continue to checkout.');
         return;
