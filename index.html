@@ -1347,7 +1347,7 @@ function openAuthModal(mode){
 function closeAuthModal(cancel = true){
     document.getElementById('authModalWrap').classList.remove('open');
     document.body.style.overflow = '';
-    if(cancel && !currentUser){
+    if(cancel && !auth.currentUser){
         pendingCheckoutAfterAuth = false;
     }
 }
@@ -1524,7 +1524,10 @@ async function openCheckout(){
     document.getElementById('addrName').value  = currentUser.displayName || '';
     document.getElementById('addrPhone').value = currentUser.phoneNumber ? currentUser.phoneNumber.replace('+91','') : '';
     document.getElementById('savedAddrBanner').style.display = 'none';
-    // Load saved address from Firestore
+    document.getElementById('checkoutErr1').textContent = '';
+    document.getElementById('checkoutWrap').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    // Load saved address from Firestore after modal is visible
     try {
         const doc = await db.collection('users').doc(currentUser.uid).get();
         if(doc.exists){
@@ -1542,9 +1545,6 @@ async function openCheckout(){
             }
         }
     } catch(e){ console.warn('Load address failed:', e); }
-    document.getElementById('checkoutErr1').textContent = '';
-    document.getElementById('checkoutWrap').classList.add('open');
-    document.body.style.overflow = 'hidden';
   } catch(e){
     console.error('openCheckout failed:', e);
     toast('Could not open checkout: '+e.message);
