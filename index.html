@@ -1230,6 +1230,7 @@
                 </select>
             </div>
             <div class="fg"><label>Price (₹)</label><input type="number" id="adPrice" placeholder="e.g. 2500"></div>
+            <div class="fg"><label>Stock (pieces available)</label><input type="number" id="adStock" min="0" placeholder="Leave blank = unlimited"></div>
             <div class="fg" style="grid-column:1/-1"><label>Description</label><textarea id="adDesc" style="min-height:70px" placeholder="Short product description..."></textarea></div>
             <div class="fg" style="grid-column:1/-1">
                 <label>Product Photos <span style="color:var(--muted);font-size:.76rem;font-family:'Inter',sans-serif;font-weight:400;">(up to 6 — first photo is the main image)</span></label>
@@ -1251,6 +1252,17 @@
 
         <h3 style="font-size:1.1rem;margin:2rem 0 1rem;color:var(--dark);">Current Products</h3>
         <div id="adminProductList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;"></div>
+
+        <!-- ── ORDERS MANAGER ── -->
+        <div style="margin-top:2.5rem;border-top:2px solid var(--border);padding-top:2rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                <h3 style="font-size:1.1rem;color:var(--dark);margin:0;">📦 Recent Orders</h3>
+                <button class="btn-outline" onclick="loadAdminOrders()" style="font-size:.85rem;">↻ Refresh</button>
+            </div>
+            <div id="adminOrderList" style="display:flex;flex-direction:column;gap:.8rem;">
+                <div style="padding:1rem;text-align:center;color:var(--muted);font-size:.85rem;">Click Refresh to load orders.</div>
+            </div>
+        </div>
 
         <!-- ── SLIDESHOW MANAGER ── -->
         <div style="margin-top:2.5rem;border-top:2px solid var(--border);padding-top:2rem;">
@@ -1677,6 +1689,7 @@ async function placeOrder(){
                     });
                 }
             } catch(e){ console.warn('Firestore update:',e); }
+            decrementStock(cart);
             openWhatsAppOrder(orderId, total, response.razorpay_payment_id);
             completeOrder(orderData);
         },
@@ -1819,6 +1832,27 @@ let products = [
 ];
 let nextId = 32;
 
+// ── STOCK TRACKING ───────────────────────────────────────────────────
+// stockMap: { [productId]: piecesRemaining }. A product with NO entry here
+// is treated as "unlimited stock" (always purchasable).
+let stockMap = JSON.parse(localStorage.getItem('rsw_stock') || '{}');
+products.forEach(p=>{
+    if(p.stock!==undefined && stockMap[p.id]===undefined) stockMap[p.id]=p.stock;
+});
+function saveStock(){ localStorage.setItem('rsw_stock', JSON.stringify(stockMap)); }
+function getStock(pid){ return stockMap[pid]; } // undefined = unlimited
+function isOutOfStock(pid){ const s=getStock(pid); return s!==undefined && s<=0; }
+function decrementStock(items){
+    let changed=false;
+    items.forEach(it=>{
+        if(stockMap[it.id]!==undefined){
+            stockMap[it.id]=Math.max(0, stockMap[it.id]-it.qty);
+            changed=true;
+        }
+    });
+    if(changed){ saveStock(); renderCatalogue(); }
+}
+
 let cart = JSON.parse(localStorage.getItem('rsw_cart') || '[]');
 let activeFilter = 'all';
 let modalQty = 1;
@@ -1849,24 +1883,32 @@ function renderCatalogue(){
         g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted)">No designs found.</div>';
         return;
     }
-    g.innerHTML = list.map(p=>`
+    g.innerHTML = list.map(p=>{
+        const stock = getStock(p.id);
+        const oos = isOutOfStock(p.id);
+        const lowStock = !oos && stock!==undefined && stock<=3;
+        return `
         <div class="cat-item">
-            <div class="cat-item-img">
+            <div class="cat-item-img" style="${oos?'opacity:.55;':''}">
                 <img src="${sanitize(p.img)}" alt="${sanitize(p.name)}" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(135deg,#c4415a,#8B1A2E)'">
                 <span class="cat-tag">${sanitize(cap(p.type))}</span>
+                ${oos?'<span class="cat-tag" style="left:auto;right:10px;background:#c0392b;">Out of Stock</span>':''}
             </div>
             <div class="cat-body">
                 <h4>${sanitize(p.name)}</h4>
                 <p class="cat-cat">${sanitize(p.category)}</p>
+                ${lowStock?`<p style="color:#b8860b;font-size:.78rem;font-weight:600;margin:.2rem 0 0;">Only ${stock} left!</p>`:''}
                 <div class="cat-footer">
                     <span class="price">${fmtPrice(p.price)}</span>
                     <div class="cat-btns">
                         <button class="btn-sm outline" onclick="openProduct(${p.id})">View</button>
-                        <button class="btn-sm" onclick="addToCart(${p.id},event)">+ Cart</button>
+                        ${oos
+                            ? `<button class="btn-sm" disabled style="opacity:.5;cursor:not-allowed;">Out of Stock</button>`
+                            : `<button class="btn-sm" onclick="addToCart(${p.id},event)">+ Cart</button>`}
                     </div>
                 </div>
             </div>
-        </div>`).join('');
+        </div>`;}).join('');
 }
 
 function setFilter(el, f){
@@ -1919,7 +1961,11 @@ function syncCart(){
 function addToCart(pid, e){
     if(e) e.stopPropagation();
     const p = products.find(x=>x.id===pid);
+    if(isOutOfStock(pid)){ toast('Sorry, this item is out of stock.'); return; }
     const ex = cart.find(x=>x.id===pid);
+    const stock = getStock(pid);
+    const wantQty = (ex?ex.qty:0)+1;
+    if(stock!==undefined && wantQty>stock){ toast(`Only ${stock} left in stock.`); return; }
     if(ex) ex.qty++; else cart.push({...p, qty:1});
     syncCart();
     toast('✓ Added: '+p.name);
@@ -1928,6 +1974,10 @@ function rmCart(pid){ cart=cart.filter(c=>c.id!==pid); syncCart(); }
 function chQty(pid, d){
     const c=cart.find(x=>x.id===pid);
     if(!c) return;
+    if(d>0){
+        const stock = getStock(pid);
+        if(stock!==undefined && c.qty+d>stock){ toast(`Only ${stock} left in stock.`); return; }
+    }
     c.qty+=d;
     if(c.qty<1) rmCart(pid); else syncCart();
 }
@@ -2068,6 +2118,7 @@ function openProduct(pid){
             <p><strong>Category:</strong> ${sanitize(p.category)}</p>
             <p><strong>Style:</strong> ${sanitize(cap(p.type))}</p>
             <p>${sanitize(p.desc)}</p>
+            ${isOutOfStock(p.id) ? `<p style="color:#c0392b;font-weight:600;">Out of Stock</p>` : (getStock(p.id)!==undefined && getStock(p.id)<=3 ? `<p style="color:#b8860b;font-weight:600;">Only ${getStock(p.id)} left!</p>` : '')}
             <div class="modal-qty-row">
                 <span style="font-weight:500">Quantity:</span>
                 <div class="qty-ctrl">
@@ -2076,8 +2127,8 @@ function openProduct(pid){
                     <button class="qty-ctrl-btn" onclick="adjModalQty(1)">+</button>
                 </div>
             </div>
-            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="addFromModal(${p.id})">
-                🛒 Add to Cart
+            <button class="btn-primary" style="width:100%;justify-content:center;" onclick="addFromModal(${p.id})" ${isOutOfStock(p.id)?'disabled style="opacity:.5;cursor:not-allowed;"':''}>
+                ${isOutOfStock(p.id) ? 'Out of Stock' : '🛒 Add to Cart'}
             </button>
             <p style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:.6rem">
                 ✓ Handcrafted with care &nbsp;|&nbsp; ✓ Authentic designs &nbsp;|&nbsp; ✓ Fast delivery
@@ -2092,7 +2143,11 @@ function closeModalOverlay(e){ if(e.target===document.getElementById('modalWrap'
 function adjModalQty(d){ modalQty=Math.max(1,modalQty+d); document.getElementById('mQty').textContent=modalQty; }
 function addFromModal(pid){
     const p=products.find(x=>x.id===pid);
+    if(isOutOfStock(pid)){ toast('Sorry, this item is out of stock.'); return; }
     const ex=cart.find(x=>x.id===pid);
+    const stock=getStock(pid);
+    const wantQty=(ex?ex.qty:0)+modalQty;
+    if(stock!==undefined && wantQty>stock){ toast(`Only ${stock} left in stock.`); return; }
     if(ex) ex.qty+=modalQty; else cart.push({...p,qty:modalQty});
     syncCart(); closeModal();
     toast('✓ Added: '+p.name);
@@ -2144,16 +2199,132 @@ function showAdmin(){
     renderAdminSlides();
     initImgSlots();
     document.getElementById('adminPanel').style.display='block';
+    loadAdminOrders();
+}
+
+// ── ADMIN: ORDERS ─────────────────────────────────────────────────────
+const ORDER_STATUS_OPTIONS = [
+    { value:'pending_payment', text:'Payment Pending' },
+    { value:'paid',            text:'Paid' },
+    { value:'shipped',         text:'Shipped' },
+    { value:'delivered',       text:'Delivered' },
+    { value:'cancelled',       text:'Cancelled' },
+];
+
+async function loadAdminOrders(){
+    const list = document.getElementById('adminOrderList');
+    list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--muted);font-size:.85rem;">Loading orders…</div>';
+    try {
+        const snapshot = await db.collection('orders').orderBy('createdAt','desc').limit(50).get();
+        if(snapshot.empty){
+            list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--muted);font-size:.85rem;">No orders yet.</div>';
+            return;
+        }
+        list.innerHTML = snapshot.docs.map(doc=>{
+            const o = doc.data();
+            const id = doc.id;
+            const optionsHTML = ORDER_STATUS_OPTIONS.map(s=>`<option value="${s.value}" ${o.status===s.value?'selected':''}>${s.text}</option>`).join('');
+            const placedOn = o.createdAt?.toDate ? o.createdAt.toDate().toLocaleString() : 'N/A';
+            const itemsList = (o.items||[]).map(i=>`${sanitize(i.name)} (x${i.qty})`).join(', ');
+            return `<div style="border:1px solid var(--border);border-radius:10px;padding:.9rem;font-size:.85rem;">
+                <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:.4rem;margin-bottom:.4rem;">
+                    <strong>${sanitize(o.orderId||id)}</strong>
+                    <span style="color:var(--crimson);font-weight:600;">₹${(o.total||0).toLocaleString('en-IN')}</span>
+                </div>
+                <div style="color:var(--muted);margin-bottom:.25rem;">Customer: ${sanitize(o.userName||'N/A')} · ${sanitize(o.userPhone||'')}</div>
+                <div style="color:var(--muted);margin-bottom:.25rem;">Items: ${itemsList||'N/A'}</div>
+                <div style="color:var(--muted);margin-bottom:.5rem;">Placed: ${placedOn}</div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <select id="orderStatus_${id}" style="padding:.25rem .5rem;border:1px solid var(--border);border-radius:6px;font-size:.8rem;">${optionsHTML}</select>
+                    <button onclick="adminUpdateOrderStatus('${id}')" style="background:var(--cream);border:1px solid var(--border);padding:.25rem .6rem;border-radius:6px;cursor:pointer;font-size:.8rem;">Update Status</button>
+                    <button onclick='adminSendWhatsAppUpdate(${JSON.stringify({orderId:o.orderId||id, phone:o.userPhone||'', name:o.userName||'', status:o.status||''}).replace(/'/g,"&apos;")})' style="background:#e9f7ef;border:1px solid #b7e4c7;color:#1f8a4c;padding:.25rem .6rem;border-radius:6px;cursor:pointer;font-size:.8rem;">📲 Send WhatsApp Update</button>
+                </div>
+            </div>`;
+        }).join('');
+    } catch(err){
+        console.warn('Load orders failed:', err);
+        list.innerHTML = `<div style="padding:1rem;text-align:center;color:#c00;font-size:.85rem;">
+            Couldn't load orders (permission denied or offline).<br>
+            Make sure your Firestore security rules allow this account to read all "orders" documents.
+        </div>`;
+    }
+}
+
+async function adminUpdateOrderStatus(docId){
+    const select = document.getElementById('orderStatus_'+docId);
+    const newStatus = select.value;
+    try {
+        await db.collection('orders').doc(docId).update({ status: newStatus });
+        toast('✓ Order status updated.');
+        loadAdminOrders();
+    } catch(err){
+        console.warn('Update order status failed:', err);
+        toast('Could not update status — check Firestore permissions.');
+    }
+}
+
+function adminSendWhatsAppUpdate(info){
+    const statusMessages = {
+        'pending_payment': "We've received your order and it's awaiting payment confirmation.",
+        'paid':            "Your payment is confirmed! We're getting your order ready.",
+        'shipped':         "Great news — your order has been shipped and is on its way! 🚚",
+        'delivered':       "Your order has been delivered. We hope you love it! 🙏",
+        'cancelled':       "Your order has been cancelled. Please contact us if you have any questions.",
+    };
+    const statusLine = statusMessages[info.status] || "Here's an update on your order.";
+    const msg = [
+        '🧵 *Rasika Stitch Works — Order Update*',
+        `*Order ID:* ${info.orderId}`,
+        `Hi ${info.name||'there'},`,
+        '',
+        statusLine,
+        '',
+        'Thank you for shopping with us! 🙏'
+    ].join('\n');
+    let phone = (info.phone||'').replace(/\D/g,'');
+    if(phone.length===10) phone = '91'+phone; // assume Indian number without country code
+    if(!phone){ toast('No phone number on file for this customer.'); return; }
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 function renderAdminList(){
-    document.getElementById('adminProductList').innerHTML = products.map(p=>`
+    document.getElementById('adminProductList').innerHTML = products.map(p=>{
+        const stock = getStock(p.id);
+        const stockLabel = stock===undefined ? 'Unlimited' : (stock<=0?'Out of stock':stock+' left');
+        const stockColor = stock!==undefined && stock<=0 ? '#c0392b' : (stock!==undefined && stock<=3 ? '#b8860b':'var(--muted)');
+        return `
         <div style="border:1px solid var(--border);border-radius:8px;padding:.8rem;font-size:.82rem;">
             <div style="font-weight:600;margin-bottom:.25rem;color:var(--dark)">${sanitize(p.name)}</div>
             <div style="color:var(--muted)">${sanitize(p.category)} · ${sanitize(cap(p.type))}</div>
             <div style="color:var(--crimson);font-weight:600">${fmtPrice(p.price)}</div>
+            <div style="margin-top:.4rem;display:flex;align-items:center;gap:6px;">
+                <span style="color:${stockColor};font-weight:600;">${stockLabel}</span>
+                <input type="number" min="0" id="stockInput${p.id}" placeholder="qty" style="width:60px;padding:.15rem .3rem;border:1px solid var(--border);border-radius:4px;font-size:.78rem;">
+                <button onclick="adminUpdateStock(${p.id})" style="background:var(--cream);border:1px solid var(--border);padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:.76rem;">Set</button>
+                ${stock!==undefined?`<button onclick="adminClearStock(${p.id})" title="Make unlimited" style="background:var(--cream);border:1px solid var(--border);padding:.2rem .5rem;border-radius:4px;cursor:pointer;font-size:.76rem;">∞</button>`:''}
+            </div>
             <button onclick="adminDelete(${p.id})" style="margin-top:.5rem;background:#fee;border:1px solid #fcc;color:#c00;padding:.2rem .6rem;border-radius:4px;cursor:pointer;font-size:.78rem;">Remove</button>
-        </div>`).join('');
+        </div>`;}).join('');
+}
+
+function adminUpdateStock(pid){
+    const input = document.getElementById('stockInput'+pid);
+    const val = input.value.trim();
+    if(val===''){ toast('Enter a quantity first.'); return; }
+    const qty = Math.max(0, parseInt(val)||0);
+    stockMap[pid] = qty;
+    saveStock();
+    renderAdminList();
+    renderCatalogue();
+    toast('✓ Stock updated.');
+}
+
+function adminClearStock(pid){
+    delete stockMap[pid];
+    saveStock();
+    renderAdminList();
+    renderCatalogue();
+    toast('Stock set to unlimited.');
 }
 
 /* ── multi-photo slots state ── */
@@ -2231,19 +2402,23 @@ function adminAddProduct(){
     const placeholder = 'https://t3.ftcdn.net/jpg/03/82/04/18/500_F_382041800_YLXN1qRHpSxKPDeVZDP1ioZhcrhTVbJt.jpg';
     const finalImgs = allImgs.length ? allImgs : [placeholder];
 
+    const newId = nextId++;
+    const stockVal = document.getElementById('adStock').value.trim();
     products.push({
-        id:nextId++,
+        id:newId,
         name,
         category: document.getElementById('adCat').value,
         type:     document.getElementById('adType').value,
         price,
         desc:     document.getElementById('adDesc').value || 'Handcrafted with care.',
         img:      finalImgs[0],
-        imgs:     finalImgs
+        imgs:     finalImgs,
+        ...(stockVal!=='' ? {stock: Math.max(0, parseInt(stockVal)||0)} : {})
     });
+    if(stockVal!==''){ stockMap[newId] = Math.max(0, parseInt(stockVal)||0); saveStock(); }
     renderCatalogue();
     renderAdminList();
-    ['adName','adPrice','adDesc','adImg'].forEach(id=>document.getElementById(id).value='');
+    ['adName','adPrice','adStock','adDesc','adImg'].forEach(id=>document.getElementById(id).value='');
     clearAllImgSlots();
     addImgSlot(); // reset to one fresh empty slot
     toast('✓ Product added!');
@@ -2252,6 +2427,7 @@ function adminAddProduct(){
 function adminDelete(pid){
     products=products.filter(p=>p.id!==pid);
     cart=cart.filter(c=>c.id!==pid);
+    delete stockMap[pid]; saveStock();
     syncCart(); renderCatalogue(); renderAdminList();
     toast('Product removed.');
 }
