@@ -669,6 +669,14 @@
         /* ── UI/UX additions ── */
         .slide-caption { padding-bottom: 2.3rem !important; pointer-events: none; }  /* text only: let clicks reach the Shop button */
         .slide-cta { bottom: 64px !important; }
+        .oh-card { border:1px solid var(--border); border-radius:12px; padding:.9rem 1rem; margin-bottom:.75rem; background:#fff; }
+        .oh-card.latest { border-color:var(--crimson); box-shadow:0 0 0 2px rgba(0,0,0,.03); }
+        .oh-top { display:flex; justify-content:space-between; align-items:center; gap:.6rem; flex-wrap:wrap; margin-bottom:.45rem; }
+        .oh-badge { font-size:.68rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:var(--crimson); color:#fff; padding:.12rem .5rem; border-radius:10px; margin-left:.4rem; }
+        .oh-status { font-weight:700; font-size:.84rem; padding:.2rem .65rem; border-radius:20px; }
+        .oh-items { font-size:.84rem; color:var(--text); margin:.2rem 0 .45rem; }
+        .oh-meta { font-size:.8rem; color:var(--muted); line-height:1.6; }
+        .oh-live { font-size:.74rem; color:var(--muted); margin:-.4rem 0 .8rem; }
         .cat-toolbar { display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin:-1rem 0 1.6rem; }
         .cat-toolbar select {
             padding:.55rem 2rem .55rem .9rem; border:1px solid var(--border); border-radius:8px;
@@ -753,8 +761,12 @@
 
         .cat-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        @media(max-width:1100px) {
+            .cat-grid { grid-template-columns: repeat(3, 1fr); }
         }
 
         .cat-item {
@@ -2393,11 +2405,13 @@
                     <div class="tick">✅</div>
                     <h2>Order Placed!</h2>
                     <div class="order-id-chip" id="confirmOrderId">RSW-…</div>
-                    <p style="font-size:.88rem;color:var(--text);margin-bottom:1.4rem;line-height:1.65;">Payment has
-                        been completed successfully. Your order is confirmed and saved in your account. You can track
-                        the order status in Firebase Console.</p>
-                    <button class="btn-primary" style="justify-content:center;" onclick="closeCheckout()">✓ Continue
-                        Shopping</button>
+                    <p style="font-size:.88rem;color:var(--text);margin-bottom:1.4rem;line-height:1.65;">Payment
+                        received — thank you! Your order is confirmed. You can follow its status any time under
+                        <strong>My Orders</strong>.</p>
+                    <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;">
+                        <button class="btn-primary" style="justify-content:center;" onclick="closeCheckout(); openOrderHistory();">📦 View My Orders</button>
+                        <button class="btn-outline" style="justify-content:center;" onclick="closeCheckout()">Continue Shopping</button>
+                    </div>
                 </div>
             </div>
 
@@ -2406,7 +2420,7 @@
 
     <!-- ── ORDER HISTORY MODAL ── -->
     <div id="orderHistoryWrap"
-        style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:220;">
+        style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2600;" onclick="if(event.target===this)closeOrderHistory()">
         <div
             style="background:#fff;border-radius:18px;max-width:680px;width:92%;padding:1.2rem;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.18);">
             <button
@@ -3269,11 +3283,15 @@
                 createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
 
-            // Save order to Firestore without blocking Razorpay from opening
-            let orderRef = null;
-            db.collection('orders').add(orderData)
-                .then(ref => { orderRef = ref; return db.collection('users').doc(currentUser.uid).set({ address: savedAddress }, { merge: true }); })
-                .catch(e => console.warn('Firestore:', e));
+            // Save order to Firestore without blocking Razorpay from opening.
+            // Keep the promise so the payment handler can wait for it (fixes "Payment Pending" after paying).
+            const orderRefPromise = db.collection('orders').add(orderData)
+                .then(ref => {
+                    db.collection('users').doc(currentUser.uid).set({ address: savedAddress }, { merge: true })
+                        .catch(e => console.warn('Save address:', e));
+                    return ref;
+                })
+                .catch(e => { console.warn('Firestore order save:', e); return null; });
 
             if (typeof Razorpay === 'undefined') {
                 try {
@@ -3300,6 +3318,7 @@
                 theme: { color: '#CC5500' },
                 handler: async function (response) {
                     try {
+                        const orderRef = await orderRefPromise;
                         if (orderRef) {
                             await orderRef.update({
                                 status: 'paid',
@@ -3324,6 +3343,10 @@
             try {
                 const rzp = new Razorpay(options);
                 rzp.on('payment.failed', function (response) {
+                    orderRefPromise.then(ref => ref && ref.update({
+                        status: 'payment_failed',
+                        paymentError: (response.error && response.error.description) || 'Payment failed',
+                    })).catch(e => console.warn('Firestore update:', e));
                     btn.textContent = '🔒 Pay ₹' + total.toLocaleString('en-IN') + ' Now →';
                     btn.disabled = false;
                     errEl.textContent = 'Payment failed: ' + (response.error && response.error.description ? response.error.description : 'Please try again.');
@@ -3365,58 +3388,72 @@
             if (btn) { btn.textContent = 'Place Order via WhatsApp →'; btn.disabled = false; }
         }
 
-        async function openOrderHistory() {
+        let orderHistoryUnsub = null;
+        const ORDER_STATUS_LABELS = {
+            'pending_payment': { text: '⏳ Payment Pending', color: '#8a5a00', bg: '#fff4d6' },
+            'payment_failed':  { text: '⚠️ Payment Failed',  color: '#a3261b', bg: '#fde8e6' },
+            'paid':            { text: '✅ Paid',            color: '#17703f', bg: '#e3f5ea' },
+            'shipped':         { text: '📦 Shipped',         color: '#174ea6', bg: '#e6eefc' },
+            'delivered':       { text: '🎉 Delivered',       color: '#17703f', bg: '#e3f5ea' },
+            'cancelled':       { text: '❌ Cancelled',       color: '#a3261b', bg: '#fde8e6' },
+            'pending':         { text: '⏳ Pending',         color: '#8a5a00', bg: '#fff4d6' },
+        };
+        function orderTime(o) {
+            if (o.createdAt && o.createdAt.toMillis) return o.createdAt.toMillis();
+            return Date.now() + 1;   // just placed: server time not back yet → treat as newest
+        }
+        function renderOrderHistory(docs) {
+            const list = document.getElementById('orderHistoryList');
+            const header = document.getElementById('orderHistoryHeader');
+            if (!docs.length) {
+                header.textContent = 'My Orders';
+                list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--muted);">No orders yet — your orders will appear here.</div>';
+                return;
+            }
+            header.textContent = `My Orders (${docs.length})`;
+            const sorted = [...docs].sort((a, b) => orderTime(b.data()) - orderTime(a.data()));
+            list.innerHTML = '<div class="oh-live">Status updates automatically.</div>' + sorted.map((doc, idx) => {
+                const o = doc.data();
+                const st = ORDER_STATUS_LABELS[o.status] || { text: sanitize(o.status || 'Pending'), color: '#174ea6', bg: '#e6eefc' };
+                const items = (o.items || []).map(i => `${sanitize(i.name)} × ${i.qty}`).join(', ') || '—';
+                const placed = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString('en-IN') : 'Just now';
+                const paidOn = o.paidAt && o.paidAt.toDate ? o.paidAt.toDate().toLocaleString('en-IN') : '';
+                return `<div class="oh-card${idx === 0 ? ' latest' : ''}">
+                    <div class="oh-top">
+                        <strong>Order ${sanitize(o.orderId || doc.id)}${idx === 0 ? '<span class="oh-badge">Latest</span>' : ''}</strong>
+                        <span class="oh-status" style="color:${st.color};background:${st.bg};">${st.text}</span>
+                    </div>
+                    <div class="oh-items">${items}</div>
+                    <div class="oh-meta">
+                        <b>Total:</b> ₹${(o.total || 0).toLocaleString('en-IN')}
+                        ${o.paymentId ? ` &nbsp;·&nbsp; <b>Payment ID:</b> ${sanitize(o.paymentId)}` : ''}<br>
+                        <b>Placed:</b> ${placed}${paidOn ? ` &nbsp;·&nbsp; <b>Paid:</b> ${paidOn}` : ''}<br>
+                        <b>Deliver to:</b> ${sanitize(o.address?.city || 'N/A')}${o.address?.state ? ', ' + sanitize(o.address.state) : ''}
+                        ${o.status === 'payment_failed' ? `<br><span style="color:#a3261b;">${sanitize(o.paymentError || 'Payment did not go through.')} Contact us on WhatsApp if money was deducted.</span>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+        function openOrderHistory() {
             if (!currentUser) { toast('Sign in to view your orders.'); return; }
             const wrap = document.getElementById('orderHistoryWrap');
             const list = document.getElementById('orderHistoryList');
-            const header = document.getElementById('orderHistoryHeader');
             list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--muted);">Loading orders…</div>';
             wrap.style.display = 'flex';
-            try {
-                let snapshot;
-                try {
-                    snapshot = await db.collection('orders').where('userId', '==', currentUser.uid).orderBy('createdAt', 'desc').get();
-                } catch (idxErr) {
-                    console.warn('Indexed query failed, falling back to client-side sort:', idxErr);
-                    snapshot = await db.collection('orders').where('userId', '==', currentUser.uid).get();
-                }
-                if (snapshot.empty) {
-                    list.innerHTML = '<div style="padding:1rem;text-align:center;color:var(--muted);">No orders found yet.</div>';
-                    header.textContent = 'My Orders';
-                    return;
-                }
-                header.textContent = `My Orders (${snapshot.size})`;
-                const statusLabels = {
-                    'pending_payment': { text: 'Payment Pending', color: '#b8860b' },
-                    'paid': { text: '✅ Paid', color: '#1f8a4c' },
-                    'shipped': { text: '📦 Shipped', color: '#1565c0' },
-                    'delivered': { text: '✅ Delivered', color: '#1f8a4c' },
-                    'cancelled': { text: '❌ Cancelled', color: '#c0392b' },
-                    'pending': { text: 'Pending', color: '#b8860b' },
-                };
-                const sortedDocs = [...snapshot.docs].sort((a, b) => {
-                    const ta = a.data().createdAt?.toMillis ? a.data().createdAt.toMillis() : 0;
-                    const tb = b.data().createdAt?.toMillis ? b.data().createdAt.toMillis() : 0;
-                    return tb - ta;
-                });
-                list.innerHTML = sortedDocs.map(doc => {
-                    const order = doc.data();
-                    const st = statusLabels[order.status] || { text: sanitize(order.status || 'pending'), color: '#1565c0' };
-                    return `<div class="auth-field" style="border:1px solid var(--border);border-radius:10px;padding:.9rem;margin-bottom:.75rem;">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.45rem;"><strong>Order ${sanitize(order.orderId || doc.id)}</strong><span style="color:${st.color};font-weight:700;">${st.text}</span></div>
-                <div style="font-size:.85rem;color:var(--text);margin-bottom:.35rem;">Total: ₹${(order.total || 0).toLocaleString('en-IN')}</div>
-                <div style="font-size:.82rem;color:var(--muted);">Delivery: ${sanitize(order.address?.city || 'N/A')}, ${sanitize(order.address?.state || '')}</div>
-                <div style="font-size:.82rem;color:var(--muted);">Placed on: ${order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString() : 'N/A'}</div>
-            </div>`;
-                }).join('');
-            } catch (err) {
-                list.innerHTML = '<div style="padding:1rem;text-align:center;color:#c00;">Failed to load orders.</div>';
+            if (orderHistoryUnsub) { orderHistoryUnsub(); orderHistoryUnsub = null; }
+            const base = db.collection('orders').where('userId', '==', currentUser.uid);
+            const onError = err => {
                 console.warn('Order history failed:', err);
-            }
+                list.innerHTML = '<div style="padding:1rem;text-align:center;color:#c00;">Could not load your orders. Please check your connection and try again.</div>';
+            };
+            // Live listener: shows the new order straight away and updates when payment/shipping status changes.
+            // (No orderBy here, so it works without a Firestore composite index; sorting happens in the page.)
+            orderHistoryUnsub = base.onSnapshot(snap => renderOrderHistory(snap.docs), onError);
         }
 
         function closeOrderHistory() {
             document.getElementById('orderHistoryWrap').style.display = 'none';
+            if (orderHistoryUnsub) { orderHistoryUnsub(); orderHistoryUnsub = null; }
         }
 
         // ── DATA ──────────────────────────────────────────────────────────────
