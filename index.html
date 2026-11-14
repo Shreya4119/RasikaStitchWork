@@ -98,12 +98,25 @@
         }
 
         .nav-logo-img {
-            height: 64px; width: 64px; object-fit: contain; border-radius: 50%;
-            background: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+            height: 64px;
+            width: 64px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
             transition: transform .25s;
         }
-        .logo:hover .nav-logo-img { transform: scale(1.06) rotate(-3deg); }
-        @media (max-width: 768px) { .nav-logo-img { height: 52px; width: 52px; } }
+
+        .logo:hover .nav-logo-img {
+            transform: scale(1.06) rotate(-3deg);
+        }
+
+        @media (max-width: 768px) {
+            .nav-logo-img {
+                height: 52px;
+                width: 52px;
+            }
+        }
 
         .logo-name {
             font-family: 'Playfair Display', serif;
@@ -667,35 +680,173 @@
         }
 
         /* ── UI/UX additions ── */
-        .slide-caption { padding-bottom: 2.3rem !important; pointer-events: none; }  /* text only: let clicks reach the Shop button */
-        .slide-cta { bottom: 64px !important; }
-        .oh-card { border:1px solid var(--border); border-radius:12px; padding:.9rem 1rem; margin-bottom:.75rem; background:#fff; }
-        .oh-card.latest { border-color:var(--crimson); box-shadow:0 0 0 2px rgba(0,0,0,.03); }
-        .oh-top { display:flex; justify-content:space-between; align-items:center; gap:.6rem; flex-wrap:wrap; margin-bottom:.45rem; }
-        .oh-badge { font-size:.68rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:var(--crimson); color:#fff; padding:.12rem .5rem; border-radius:10px; margin-left:.4rem; }
-        .oh-status { font-weight:700; font-size:.84rem; padding:.2rem .65rem; border-radius:20px; }
-        .oh-items { font-size:.84rem; color:var(--text); margin:.2rem 0 .45rem; }
-        .oh-meta { font-size:.8rem; color:var(--muted); line-height:1.6; }
-        .oh-live { font-size:.74rem; color:var(--muted); margin:-.4rem 0 .8rem; }
-        .cat-toolbar { display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin:-1rem 0 1.6rem; }
+        .slide-caption {
+            padding-bottom: 2.3rem !important;
+            pointer-events: none;
+        }
+
+        /* text only: let clicks reach the Shop button */
+        .slide-cta {
+            bottom: 64px !important;
+        }
+
+        .oh-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: .9rem 1rem;
+            margin-bottom: .75rem;
+            background: #fff;
+        }
+
+        .oh-card.latest {
+            border-color: var(--crimson);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, .03);
+        }
+
+        .oh-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            margin-bottom: .45rem;
+        }
+
+        .oh-badge {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            background: var(--crimson);
+            color: #fff;
+            padding: .12rem .5rem;
+            border-radius: 10px;
+            margin-left: .4rem;
+        }
+
+        .oh-status {
+            font-weight: 700;
+            font-size: .84rem;
+            padding: .2rem .65rem;
+            border-radius: 20px;
+        }
+
+        .oh-items {
+            font-size: .84rem;
+            color: var(--text);
+            margin: .2rem 0 .45rem;
+        }
+
+        .oh-meta {
+            font-size: .8rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .oh-live {
+            font-size: .74rem;
+            color: var(--muted);
+            margin: -.4rem 0 .8rem;
+        }
+
+        .cat-toolbar {
+            display: flex;
+            gap: .7rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: -1rem 0 1.6rem;
+        }
+
         .cat-toolbar select {
-            padding:.55rem 2rem .55rem .9rem; border:1px solid var(--border); border-radius:8px;
-            background:white; color:var(--dark); font-size:.88rem; font-family:'Inter',sans-serif; cursor:pointer;
+            padding: .55rem 2rem .55rem .9rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--dark);
+            font-size: .88rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
         }
-        .cat-toolbar select:focus { outline:none; border-color:var(--crimson); }
-        .cat-count { margin-left:auto; font-size:.84rem; color:var(--muted); }
-        .cat-clear { background:none; border:none; color:var(--crimson); font-size:.84rem; cursor:pointer; text-decoration:underline; padding:0; }
-        .prod-facts { list-style:none; margin:.9rem 0 1.1rem; padding:.85rem 1rem; background:var(--cream); border:1px solid var(--border); border-radius:10px; }
-        .prod-facts li { font-size:.84rem; color:var(--text); padding:.22rem 0; display:flex; gap:.5rem; }
-        .prod-facts li b { color:var(--dark); font-weight:600; min-width:92px; }
+
+        .cat-toolbar select:focus {
+            outline: none;
+            border-color: var(--crimson);
+        }
+
+        .cat-count {
+            margin-left: auto;
+            font-size: .84rem;
+            color: var(--muted);
+        }
+
+        .cat-clear {
+            background: none;
+            border: none;
+            color: var(--crimson);
+            font-size: .84rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .prod-facts {
+            list-style: none;
+            margin: .9rem 0 1.1rem;
+            padding: .85rem 1rem;
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .prod-facts li {
+            font-size: .84rem;
+            color: var(--text);
+            padding: .22rem 0;
+            display: flex;
+            gap: .5rem;
+        }
+
+        .prod-facts li b {
+            color: var(--dark);
+            font-weight: 600;
+            min-width: 92px;
+        }
+
         .btn-custom {
-            width:100%; margin-top:.6rem; padding:.75rem; border-radius:8px; cursor:pointer;
-            background:white; color:var(--teal); border:1.5px solid var(--teal); font-size:.9rem; font-weight:500;
-            font-family:'Inter',sans-serif; transition:all .2s;
+            width: 100%;
+            margin-top: .6rem;
+            padding: .75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            color: var(--teal);
+            border: 1.5px solid var(--teal);
+            font-size: .9rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: all .2s;
         }
-        .btn-custom:hover { background:var(--teal); color:white; }
-        .trust-strip { display:flex; flex-direction:column; gap:.3rem; font-size:.78rem; color:var(--muted); margin:-.3rem 0 .9rem; }
-        @media(max-width:600px){ .cat-count { margin-left:0; width:100%; } }
+
+        .btn-custom:hover {
+            background: var(--teal);
+            color: white;
+        }
+
+        .trust-strip {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            font-size: .78rem;
+            color: var(--muted);
+            margin: -.3rem 0 .9rem;
+        }
+
+        @media(max-width:600px) {
+            .cat-count {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
 
         .cat-controls {
             display: flex;
@@ -766,7 +917,9 @@
         }
 
         @media(max-width:1100px) {
-            .cat-grid { grid-template-columns: repeat(3, 1fr); }
+            .cat-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .cat-item {
@@ -808,7 +961,8 @@
             padding: 1rem;
         }
 
-        .cat-body h3, .cat-body h4 {
+        .cat-body h3,
+        .cat-body h4 {
             font-size: .97rem;
             margin-bottom: .25rem;
             color: var(--dark);
@@ -998,7 +1152,8 @@
             margin-bottom: .2rem;
         }
 
-        .afeat h3, .afeat h4 {
+        .afeat h3,
+        .afeat h4 {
             font-family: 'Inter', sans-serif;
             font-size: .93rem;
             font-weight: 600;
@@ -2407,10 +2562,13 @@
                     <div class="order-id-chip" id="confirmOrderId">RSW-…</div>
                     <p style="font-size:.88rem;color:var(--text);margin-bottom:1.4rem;line-height:1.65;">Payment
                         received — thank you! Your order is confirmed. You can follow its status any time under
-                        <strong>My Orders</strong>.</p>
+                        <strong>My Orders</strong>.
+                    </p>
                     <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;">
-                        <button class="btn-primary" style="justify-content:center;" onclick="closeCheckout(); openOrderHistory();">📦 View My Orders</button>
-                        <button class="btn-outline" style="justify-content:center;" onclick="closeCheckout()">Continue Shopping</button>
+                        <button class="btn-primary" style="justify-content:center;"
+                            onclick="closeCheckout(); openOrderHistory();">📦 View My Orders</button>
+                        <button class="btn-outline" style="justify-content:center;" onclick="closeCheckout()">Continue
+                            Shopping</button>
                     </div>
                 </div>
             </div>
@@ -2420,7 +2578,8 @@
 
     <!-- ── ORDER HISTORY MODAL ── -->
     <div id="orderHistoryWrap"
-        style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2600;" onclick="if(event.target===this)closeOrderHistory()">
+        style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2600;"
+        onclick="if(event.target===this)closeOrderHistory()">
         <div
             style="background:#fff;border-radius:18px;max-width:680px;width:92%;padding:1.2rem;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.18);">
             <button
@@ -2487,7 +2646,8 @@
             </div>
             <div class="prod-card" onclick="filterToCategory('Blouses')">
                 <div class="prod-card-img">
-                    <img src="images/inventory/Blouse Embroidary/peacock design blouse.webp" alt="Blouses" loading="lazy" decoding="async"
+                    <img src="images/inventory/Blouse Embroidary/peacock design blouse.webp" alt="Blouses"
+                        loading="lazy" decoding="async"
                         onerror="this.parentElement.style.background='linear-gradient(135deg,#2B6B4F,#0F3D2A)';this.style.display='none'">
                 </div>
                 <div class="prod-card-body">
@@ -2498,7 +2658,8 @@
             </div>
             <div class="prod-card" onclick="filterToCategory('Suits & Kurties')">
                 <div class="prod-card-img">
-                    <img src="images/inventory/Suits and Kurties/Screenshot 2026-06-08 154450.webp" alt="Suits & Kurties" loading="lazy" decoding="async"
+                    <img src="images/inventory/Suits and Kurties/Screenshot 2026-06-08 154450.webp"
+                        alt="Suits & Kurties" loading="lazy" decoding="async"
                         onerror="this.parentElement.style.background='linear-gradient(135deg,#B8962E,#7A5E00)';this.style.display='none'">
                 </div>
                 <div class="prod-card-body">
@@ -2509,7 +2670,8 @@
             </div>
             <div class="prod-card" onclick="filterToCategory('Embroidery Designs')">
                 <div class="prod-card-img">
-                    <img src="images/inventory/embroidaryArticles/rangoli art.webp" alt="Embroidery Art" loading="lazy" decoding="async"
+                    <img src="images/inventory/embroidaryArticles/rangoli art.webp" alt="Embroidery Art" loading="lazy"
+                        decoding="async"
                         onerror="this.parentElement.style.background='linear-gradient(135deg,#8B1A4A,#CC5500)';this.style.display='none'">
                 </div>
                 <div class="prod-card-body">
@@ -2581,7 +2743,8 @@
                 <option value="price-desc">Price: High to Low</option>
                 <option value="name">Name: A–Z</option>
             </select>
-            <button class="cat-clear" id="catClear" onclick="clearCatalogueFilters()" style="display:none">Clear filters</button>
+            <button class="cat-clear" id="catClear" onclick="clearCatalogueFilters()" style="display:none">Clear
+                filters</button>
             <span class="cat-count" id="catCount"></span>
         </div>
         <div class="cat-grid" id="catGrid"></div>
@@ -2598,13 +2761,13 @@
                 </div>
                 <div class="about-photo-row">
                     <div class="about-photo-sm">
-                        <img src="images/inventory/About/Screenshot 2026-06-08 160854.webp" loading="lazy" decoding="async"
-                            alt="Award ceremony recognition" onerror="this.style.display='none'">
+                        <img src="images/inventory/About/Screenshot 2026-06-08 160854.webp" loading="lazy"
+                            decoding="async" alt="Award ceremony recognition" onerror="this.style.display='none'">
                         <div class="about-photo-label">Award &amp; Recognition</div>
                     </div>
                     <div class="about-photo-sm">
-                        <img src="images/inventory/About/Screenshot 2026-06-08 161118.webp" loading="lazy" decoding="async"
-                            alt="Rasika Fashion & Creation brand" onerror="this.style.display='none'">
+                        <img src="images/inventory/About/Screenshot 2026-06-08 161118.webp" loading="lazy"
+                            decoding="async" alt="Rasika Fashion & Creation brand" onerror="this.style.display='none'">
                         <div class="about-photo-label">Rasika Fashion &amp; Creation</div>
                     </div>
                 </div>
@@ -2682,7 +2845,8 @@
                     </div>
                 </div>
                 <div class="map-box" style="padding:0;overflow:hidden;">
-                    <iframe title="Map: Rasika Stitch Works location" src="https://maps.google.com/maps?q=Rasika+Embroidery+Works&output=embed&z=15&ll=&hl=en"
+                    <iframe title="Map: Rasika Stitch Works location"
+                        src="https://maps.google.com/maps?q=Rasika+Embroidery+Works&output=embed&z=15&ll=&hl=en"
                         width="100%" height="185" style="border:0;border-radius:12px;" allowfullscreen loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
                     </iframe>
@@ -2734,7 +2898,8 @@
     <footer>
         <div class="foot-grid">
             <div class="foot-brand">
-                <div class="foot-logo" style="padding:0;overflow:hidden;width:84px;height:84px;background:#fff;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,.18);">
+                <div class="foot-logo"
+                    style="padding:0;overflow:hidden;width:84px;height:84px;background:#fff;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,.18);">
                     <img src="images/logo-mark.webp" alt="Rasika Stitch Works" loading="lazy" decoding="async"
                         style="width:100%;height:100%;object-fit:contain;border-radius:50%;"
                         onerror="this.style.display='none';this.parentElement.textContent='🧵'">
@@ -2816,7 +2981,8 @@
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:9000; overflow-y:auto; padding:2rem;">
         <div
             style="background:white; border-radius:16px; max-width:900px; margin:0 auto; padding:2rem; position:relative;">
-            <button onclick="document.getElementById('adminPanel').style.display='none'; window.rswStyle && rswStyle.revertIfPreviewing();"
+            <button
+                onclick="document.getElementById('adminPanel').style.display='none'; window.rswStyle && rswStyle.revertIfPreviewing();"
                 style="position:absolute;top:1rem;right:1rem;background:var(--cream);border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.9rem;">✕
                 Close</button>
             <h2 style="margin-bottom:1.5rem; color:var(--crimson);">🛠 Owner Admin Panel</h2>
@@ -2889,7 +3055,8 @@
             <div style="margin-top:2.5rem;border-top:2px solid var(--border);padding-top:2rem;">
                 <h3 style="font-size:1.1rem;margin-bottom:.4rem;color:var(--dark);">🎨 Website Style</h3>
                 <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;">
-                    Choose the colour theme and fonts for the whole website. Click to preview, then save — every visitor will see the saved style.
+                    Choose the colour theme and fonts for the whole website. Click to preview, then save — every visitor
+                    will see the saved style.
                 </p>
                 <div id="adminStyleBox"></div>
             </div>
@@ -3392,12 +3559,12 @@
         let orderHistoryUnsub = null;
         const ORDER_STATUS_LABELS = {
             'pending_payment': { text: '⏳ Payment Pending', color: '#8a5a00', bg: '#fff4d6' },
-            'payment_failed':  { text: '⚠️ Payment Failed',  color: '#a3261b', bg: '#fde8e6' },
-            'paid':            { text: '✅ Paid',            color: '#17703f', bg: '#e3f5ea' },
-            'shipped':         { text: '📦 Shipped',         color: '#174ea6', bg: '#e6eefc' },
-            'delivered':       { text: '🎉 Delivered',       color: '#17703f', bg: '#e3f5ea' },
-            'cancelled':       { text: '❌ Cancelled',       color: '#a3261b', bg: '#fde8e6' },
-            'pending':         { text: '⏳ Pending',         color: '#8a5a00', bg: '#fff4d6' },
+            'payment_failed': { text: '⚠️ Payment Failed', color: '#a3261b', bg: '#fde8e6' },
+            'paid': { text: '✅ Paid', color: '#17703f', bg: '#e3f5ea' },
+            'shipped': { text: '📦 Shipped', color: '#174ea6', bg: '#e6eefc' },
+            'delivered': { text: '🎉 Delivered', color: '#17703f', bg: '#e3f5ea' },
+            'cancelled': { text: '❌ Cancelled', color: '#a3261b', bg: '#fde8e6' },
+            'pending': { text: '⏳ Pending', color: '#8a5a00', bg: '#fff4d6' },
         };
         function orderTime(o) {
             if (o.createdAt && o.createdAt.toMillis) return o.createdAt.toMillis();
@@ -3460,7 +3627,6 @@
         // ── DATA ──────────────────────────────────────────────────────────────
         let products = [
             // ── SAREES ──
-            { id: 1, name: "Black Floral Organza Saree", category: "Sarees", type: "traditional", price: 1, desc: "Sheer black organza with vibrant hand-embroidered multi-colour floral border and delicate star-scatter all over.", img: "images/inventory/saree/saree1.webp" },
             { id: 2, name: "Rose Pink Organza Saree", category: "Sarees", type: "traditional", price: 3500, desc: "Dreamy rose pink organza saree with a rich floral embroidery border and gold star scatter. Perfect for festive occasions.", img: "images/inventory/saree/saree2.webp" },
             { id: 3, name: "Sunshine Yellow Organza Saree", category: "Sarees", type: "traditional", price: 3200, desc: "Bright yellow organza with intricate pink & lavender floral thread embroidery at the border. Cheerful and elegant.", img: "images/inventory/saree/saree3.webp" },
             { id: 4, name: "Silver Grey Organza Saree", category: "Sarees", type: "contemporary", price: 3800, desc: "Sophisticated silver grey organza with gorgeous multi-colour floral embroidery border and gold star work.", img: "images/inventory/saree/saree4.webp" },
