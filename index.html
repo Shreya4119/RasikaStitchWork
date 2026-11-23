@@ -98,12 +98,25 @@
         }
 
         .nav-logo-img {
-            height: 64px; width: 64px; object-fit: contain; border-radius: 50%;
-            background: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+            height: 64px;
+            width: 64px;
+            object-fit: contain;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
             transition: transform .25s;
         }
-        .logo:hover .nav-logo-img { transform: scale(1.06) rotate(-3deg); }
-        @media (max-width: 768px) { .nav-logo-img { height: 52px; width: 52px; } }
+
+        .logo:hover .nav-logo-img {
+            transform: scale(1.06) rotate(-3deg);
+        }
+
+        @media (max-width: 768px) {
+            .nav-logo-img {
+                height: 52px;
+                width: 52px;
+            }
+        }
 
         .logo-name {
             font-family: 'Playfair Display', serif;
@@ -667,35 +680,173 @@
         }
 
         /* ── UI/UX additions ── */
-        .slide-caption { padding-bottom: 2.3rem !important; pointer-events: none; }  /* text only: let clicks reach the Shop button */
-        .slide-cta { bottom: 64px !important; }
-        .oh-card { border:1px solid var(--border); border-radius:12px; padding:.9rem 1rem; margin-bottom:.75rem; background:#fff; }
-        .oh-card.latest { border-color:var(--crimson); box-shadow:0 0 0 2px rgba(0,0,0,.03); }
-        .oh-top { display:flex; justify-content:space-between; align-items:center; gap:.6rem; flex-wrap:wrap; margin-bottom:.45rem; }
-        .oh-badge { font-size:.68rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; background:var(--crimson); color:#fff; padding:.12rem .5rem; border-radius:10px; margin-left:.4rem; }
-        .oh-status { font-weight:700; font-size:.84rem; padding:.2rem .65rem; border-radius:20px; }
-        .oh-items { font-size:.84rem; color:var(--text); margin:.2rem 0 .45rem; }
-        .oh-meta { font-size:.8rem; color:var(--muted); line-height:1.6; }
-        .oh-live { font-size:.74rem; color:var(--muted); margin:-.4rem 0 .8rem; }
-        .cat-toolbar { display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin:-1rem 0 1.6rem; }
+        .slide-caption {
+            padding-bottom: 2.3rem !important;
+            pointer-events: none;
+        }
+
+        /* text only: let clicks reach the Shop button */
+        .slide-cta {
+            bottom: 64px !important;
+        }
+
+        .oh-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: .9rem 1rem;
+            margin-bottom: .75rem;
+            background: #fff;
+        }
+
+        .oh-card.latest {
+            border-color: var(--crimson);
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, .03);
+        }
+
+        .oh-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: .6rem;
+            flex-wrap: wrap;
+            margin-bottom: .45rem;
+        }
+
+        .oh-badge {
+            font-size: .68rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+            background: var(--crimson);
+            color: #fff;
+            padding: .12rem .5rem;
+            border-radius: 10px;
+            margin-left: .4rem;
+        }
+
+        .oh-status {
+            font-weight: 700;
+            font-size: .84rem;
+            padding: .2rem .65rem;
+            border-radius: 20px;
+        }
+
+        .oh-items {
+            font-size: .84rem;
+            color: var(--text);
+            margin: .2rem 0 .45rem;
+        }
+
+        .oh-meta {
+            font-size: .8rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .oh-live {
+            font-size: .74rem;
+            color: var(--muted);
+            margin: -.4rem 0 .8rem;
+        }
+
+        .cat-toolbar {
+            display: flex;
+            gap: .7rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin: -1rem 0 1.6rem;
+        }
+
         .cat-toolbar select {
-            padding:.55rem 2rem .55rem .9rem; border:1px solid var(--border); border-radius:8px;
-            background:white; color:var(--dark); font-size:.88rem; font-family:'Inter',sans-serif; cursor:pointer;
+            padding: .55rem 2rem .55rem .9rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--dark);
+            font-size: .88rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
         }
-        .cat-toolbar select:focus { outline:none; border-color:var(--crimson); }
-        .cat-count { margin-left:auto; font-size:.84rem; color:var(--muted); }
-        .cat-clear { background:none; border:none; color:var(--crimson); font-size:.84rem; cursor:pointer; text-decoration:underline; padding:0; }
-        .prod-facts { list-style:none; margin:.9rem 0 1.1rem; padding:.85rem 1rem; background:var(--cream); border:1px solid var(--border); border-radius:10px; }
-        .prod-facts li { font-size:.84rem; color:var(--text); padding:.22rem 0; display:flex; gap:.5rem; }
-        .prod-facts li b { color:var(--dark); font-weight:600; min-width:92px; }
+
+        .cat-toolbar select:focus {
+            outline: none;
+            border-color: var(--crimson);
+        }
+
+        .cat-count {
+            margin-left: auto;
+            font-size: .84rem;
+            color: var(--muted);
+        }
+
+        .cat-clear {
+            background: none;
+            border: none;
+            color: var(--crimson);
+            font-size: .84rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+        }
+
+        .prod-facts {
+            list-style: none;
+            margin: .9rem 0 1.1rem;
+            padding: .85rem 1rem;
+            background: var(--cream);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .prod-facts li {
+            font-size: .84rem;
+            color: var(--text);
+            padding: .22rem 0;
+            display: flex;
+            gap: .5rem;
+        }
+
+        .prod-facts li b {
+            color: var(--dark);
+            font-weight: 600;
+            min-width: 92px;
+        }
+
         .btn-custom {
-            width:100%; margin-top:.6rem; padding:.75rem; border-radius:8px; cursor:pointer;
-            background:white; color:var(--teal); border:1.5px solid var(--teal); font-size:.9rem; font-weight:500;
-            font-family:'Inter',sans-serif; transition:all .2s;
+            width: 100%;
+            margin-top: .6rem;
+            padding: .75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            color: var(--teal);
+            border: 1.5px solid var(--teal);
+            font-size: .9rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+            transition: all .2s;
         }
-        .btn-custom:hover { background:var(--teal); color:white; }
-        .trust-strip { display:flex; flex-direction:column; gap:.3rem; font-size:.78rem; color:var(--muted); margin:-.3rem 0 .9rem; }
-        @media(max-width:600px){ .cat-count { margin-left:0; width:100%; } }
+
+        .btn-custom:hover {
+            background: var(--teal);
+            color: white;
+        }
+
+        .trust-strip {
+            display: flex;
+            flex-direction: column;
+            gap: .3rem;
+            font-size: .78rem;
+            color: var(--muted);
+            margin: -.3rem 0 .9rem;
+        }
+
+        @media(max-width:600px) {
+            .cat-count {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
 
         .cat-controls {
             display: flex;
@@ -766,7 +917,9 @@
         }
 
         @media(max-width:1100px) {
-            .cat-grid { grid-template-columns: repeat(3, 1fr); }
+            .cat-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
         .cat-item {
@@ -808,7 +961,8 @@
             padding: 1rem;
         }
 
-        .cat-body h3, .cat-body h4 {
+        .cat-body h3,
+        .cat-body h4 {
             font-size: .97rem;
             margin-bottom: .25rem;
             color: var(--dark);
@@ -998,7 +1152,8 @@
             margin-bottom: .2rem;
         }
 
-        .afeat h3, .afeat h4 {
+        .afeat h3,
+        .afeat h4 {
             font-family: 'Inter', sans-serif;
             font-size: .93rem;
             font-weight: 600;
@@ -2407,10 +2562,19 @@
                     <div class="order-id-chip" id="confirmOrderId">RSW-…</div>
                     <p style="font-size:.88rem;color:var(--text);margin-bottom:1.4rem;line-height:1.65;">Payment
                         received — thank you! Your order is confirmed. You can follow its status any time under
-                        <strong>My Orders</strong>.</p>
+                        <strong>My Orders</strong>.
+                    </p>
+                    <div id="confirmStatusNote" style="display:none;background:#fff4d6;color:#8a5a00;border-radius:8px;padding:.6rem .9rem;font-size:.8rem;margin:-.6rem 0 1rem;line-height:1.5;">
+                        Your payment went through, but we couldn't update the order status automatically. It may show
+                        as "Payment Pending" for a little while — please send us your order details on WhatsApp below.
+                    </div>
+                    <button id="waSendBtn" class="btn-primary" onclick="sendOrderOnWhatsApp()"
+                        style="width:100%;justify-content:center;margin-bottom:.7rem;background:#117A43;">📲 Send order details on WhatsApp</button>
                     <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;">
-                        <button class="btn-primary" style="justify-content:center;" onclick="closeCheckout(); openOrderHistory();">📦 View My Orders</button>
-                        <button class="btn-outline" style="justify-content:center;" onclick="closeCheckout()">Continue Shopping</button>
+                        <button class="btn-primary" style="justify-content:center;"
+                            onclick="closeCheckout(); openOrderHistory();">📦 View My Orders</button>
+                        <button class="btn-outline" style="justify-content:center;" onclick="closeCheckout()">Continue
+                            Shopping</button>
                     </div>
                 </div>
             </div>
@@ -2420,7 +2584,8 @@
 
     <!-- ── ORDER HISTORY MODAL ── -->
     <div id="orderHistoryWrap"
-        style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2600;" onclick="if(event.target===this)closeOrderHistory()">
+        style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:2600;"
+        onclick="if(event.target===this)closeOrderHistory()">
         <div
             style="background:#fff;border-radius:18px;max-width:680px;width:92%;padding:1.2rem;position:relative;box-shadow:0 24px 60px rgba(0,0,0,.18);">
             <button
@@ -2487,7 +2652,8 @@
             </div>
             <div class="prod-card" onclick="filterToCategory('Blouses')">
                 <div class="prod-card-img">
-                    <img src="images/inventory/Blouse Embroidary/peacock design blouse.webp" alt="Blouses" loading="lazy" decoding="async"
+                    <img src="images/inventory/Blouse Embroidary/peacock design blouse.webp" alt="Blouses"
+                        loading="lazy" decoding="async"
                         onerror="this.parentElement.style.background='linear-gradient(135deg,#2B6B4F,#0F3D2A)';this.style.display='none'">
                 </div>
                 <div class="prod-card-body">
@@ -2498,7 +2664,8 @@
             </div>
             <div class="prod-card" onclick="filterToCategory('Suits & Kurties')">
                 <div class="prod-card-img">
-                    <img src="images/inventory/Suits and Kurties/Screenshot 2026-06-08 154450.webp" alt="Suits & Kurties" loading="lazy" decoding="async"
+                    <img src="images/inventory/Suits and Kurties/Screenshot 2026-06-08 154450.webp"
+                        alt="Suits & Kurties" loading="lazy" decoding="async"
                         onerror="this.parentElement.style.background='linear-gradient(135deg,#B8962E,#7A5E00)';this.style.display='none'">
                 </div>
                 <div class="prod-card-body">
@@ -2509,7 +2676,8 @@
             </div>
             <div class="prod-card" onclick="filterToCategory('Embroidery Designs')">
                 <div class="prod-card-img">
-                    <img src="images/inventory/embroidaryArticles/rangoli art.webp" alt="Embroidery Art" loading="lazy" decoding="async"
+                    <img src="images/inventory/embroidaryArticles/rangoli art.webp" alt="Embroidery Art" loading="lazy"
+                        decoding="async"
                         onerror="this.parentElement.style.background='linear-gradient(135deg,#8B1A4A,#CC5500)';this.style.display='none'">
                 </div>
                 <div class="prod-card-body">
@@ -2581,7 +2749,8 @@
                 <option value="price-desc">Price: High to Low</option>
                 <option value="name">Name: A–Z</option>
             </select>
-            <button class="cat-clear" id="catClear" onclick="clearCatalogueFilters()" style="display:none">Clear filters</button>
+            <button class="cat-clear" id="catClear" onclick="clearCatalogueFilters()" style="display:none">Clear
+                filters</button>
             <span class="cat-count" id="catCount"></span>
         </div>
         <div class="cat-grid" id="catGrid"></div>
@@ -2598,13 +2767,13 @@
                 </div>
                 <div class="about-photo-row">
                     <div class="about-photo-sm">
-                        <img src="images/inventory/About/Screenshot 2026-06-08 160854.webp" loading="lazy" decoding="async"
-                            alt="Award ceremony recognition" onerror="this.style.display='none'">
+                        <img src="images/inventory/About/Screenshot 2026-06-08 160854.webp" loading="lazy"
+                            decoding="async" alt="Award ceremony recognition" onerror="this.style.display='none'">
                         <div class="about-photo-label">Award &amp; Recognition</div>
                     </div>
                     <div class="about-photo-sm">
-                        <img src="images/inventory/About/Screenshot 2026-06-08 161118.webp" loading="lazy" decoding="async"
-                            alt="Rasika Fashion & Creation brand" onerror="this.style.display='none'">
+                        <img src="images/inventory/About/Screenshot 2026-06-08 161118.webp" loading="lazy"
+                            decoding="async" alt="Rasika Fashion & Creation brand" onerror="this.style.display='none'">
                         <div class="about-photo-label">Rasika Fashion &amp; Creation</div>
                     </div>
                 </div>
@@ -2682,7 +2851,8 @@
                     </div>
                 </div>
                 <div class="map-box" style="padding:0;overflow:hidden;">
-                    <iframe title="Map: Rasika Stitch Works location" src="https://maps.google.com/maps?q=Rasika+Embroidery+Works&output=embed&z=15&ll=&hl=en"
+                    <iframe title="Map: Rasika Stitch Works location"
+                        src="https://maps.google.com/maps?q=Rasika+Embroidery+Works&output=embed&z=15&ll=&hl=en"
                         width="100%" height="185" style="border:0;border-radius:12px;" allowfullscreen loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade" onerror="this.style.display='none'">
                     </iframe>
@@ -2734,7 +2904,8 @@
     <footer>
         <div class="foot-grid">
             <div class="foot-brand">
-                <div class="foot-logo" style="padding:0;overflow:hidden;width:84px;height:84px;background:#fff;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,.18);">
+                <div class="foot-logo"
+                    style="padding:0;overflow:hidden;width:84px;height:84px;background:#fff;border-radius:50%;box-shadow:0 2px 10px rgba(0,0,0,.18);">
                     <img src="images/logo-mark.webp" alt="Rasika Stitch Works" loading="lazy" decoding="async"
                         style="width:100%;height:100%;object-fit:contain;border-radius:50%;"
                         onerror="this.style.display='none';this.parentElement.textContent='🧵'">
@@ -2816,7 +2987,8 @@
         style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:9000; overflow-y:auto; padding:2rem;">
         <div
             style="background:white; border-radius:16px; max-width:900px; margin:0 auto; padding:2rem; position:relative;">
-            <button onclick="document.getElementById('adminPanel').style.display='none'; window.rswStyle && rswStyle.revertIfPreviewing();"
+            <button
+                onclick="document.getElementById('adminPanel').style.display='none'; window.rswStyle && rswStyle.revertIfPreviewing();"
                 style="position:absolute;top:1rem;right:1rem;background:var(--cream);border:none;padding:.4rem .9rem;border-radius:6px;cursor:pointer;font-size:.9rem;">✕
                 Close</button>
             <h2 style="margin-bottom:1.5rem; color:var(--crimson);">🛠 Owner Admin Panel</h2>
@@ -2889,7 +3061,8 @@
             <div style="margin-top:2.5rem;border-top:2px solid var(--border);padding-top:2rem;">
                 <h3 style="font-size:1.1rem;margin-bottom:.4rem;color:var(--dark);">🎨 Website Style</h3>
                 <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;">
-                    Choose the colour theme and fonts for the whole website. Click to preview, then save — every visitor will see the saved style.
+                    Choose the colour theme and fonts for the whole website. Click to preview, then save — every visitor
+                    will see the saved style.
                 </p>
                 <div id="adminStyleBox"></div>
             </div>
@@ -2898,8 +3071,9 @@
             <div style="margin-top:2.5rem;border-top:2px solid var(--border);padding-top:2rem;">
                 <h3 style="font-size:1.1rem;margin-bottom:.4rem;color:var(--dark);">🖼 Manage Homepage Slideshow</h3>
                 <p style="font-size:.82rem;color:var(--muted);font-family:'Inter',sans-serif;margin-bottom:1.2rem;">
-                    For each slide you can update the caption, assign a featured product (adds a "Shop Now" button on
-                    that slide), or upload a custom image.
+                    Change captions and photos, link a product (adds a "Shop This" button), reorder with ↑ ↓,
+                    delete with 🗑, or add a new slide from a product. Visitors see your changes after you click Save
+                    (sign in with the owner account first).
                 </p>
                 <div id="adminSlideList" style="display:flex;flex-direction:column;gap:1.2rem;"></div>
                 <div style="margin-top:1.2rem;display:flex;gap:.8rem;flex-wrap:wrap;">
@@ -3317,6 +3491,7 @@
                 notes: { orderId },
                 theme: { color: '#CC5500' },
                 handler: async function (response) {
+                    let statusSaved = false;
                     try {
                         const orderRef = await orderRefPromise;
                         if (orderRef) {
@@ -3325,11 +3500,17 @@
                                 paymentId: response.razorpay_payment_id,
                                 paidAt: firebase.firestore.FieldValue.serverTimestamp(),
                             });
+                            statusSaved = true;
+                        } else {
+                            console.error('Order was not saved to Firestore, so it cannot be marked paid.');
                         }
-                    } catch (e) { console.warn('Firestore update:', e); }
+                    } catch (e) {
+                        // Usually Firestore rules refusing the update ("Missing or insufficient permissions")
+                        console.error('Could not mark order as paid:', e && e.code, e && e.message);
+                    }
                     decrementStock(cart);
-                    openWhatsAppOrder(orderId, total, response.razorpay_payment_id);
-                    completeOrder(orderData);
+                    lastOrderForWhatsApp = { ...orderData, paymentId: response.razorpay_payment_id };
+                    completeOrder(orderData, statusSaved);
                 },
                 modal: {
                     ondismiss: function () {
@@ -3360,29 +3541,43 @@
             }
         }
 
-        function openWhatsAppOrder(orderId, total, paymentId) {
-            const lines = cart.map(i => `• ${i.name} (x${i.qty}) — ₹${(i.price * i.qty).toLocaleString('en-IN')}`);
-            const msg = [
+        let lastOrderForWhatsApp = null;
+        function buildOrderWhatsAppText(o) {
+            const a = o.address || {};
+            const lines = (o.items || []).map(i => `• ${i.name} (x${i.qty}) — ₹${(i.price * i.qty).toLocaleString('en-IN')}`);
+            return [
                 '🧵 *New Order — रसिका Stitch Works*',
-                `*Order ID:* ${orderId}`,
-                paymentId ? `*Payment:* ✅ Paid (ID: ${paymentId})` : null,
-                `*Customer:* ${savedAddress.name}`,
-                `*Phone:* +91 ${savedAddress.phone}`,
-                currentUser.email ? `*Email:* ${currentUser.email}` : null,
+                `*Order ID:* ${o.orderId}`,
+                o.paymentId ? `*Payment:* ✅ Paid (Razorpay ID: ${o.paymentId})` : null,
+                `*Customer:* ${a.name || ''}`,
+                `*Phone:* +91 ${a.phone || ''}`,
+                o.userEmail ? `*Email:* ${o.userEmail}` : null,
                 '', '*Items:*', ...lines, '',
-                `*Total: ₹${total.toLocaleString('en-IN')}*`, '',
+                `*Total: ₹${(o.total || 0).toLocaleString('en-IN')}*`, '',
                 '*Delivery Address:*',
-                `${savedAddress.line1}${savedAddress.line2 ? ', ' + savedAddress.line2 : ''}`,
-                `${savedAddress.city}, ${savedAddress.state} – ${savedAddress.pincode}`, '',
-                paymentId ? 'Payment received — please process this order. 🙏' : 'Please confirm and send payment link. 🙏'
+                `${a.line1 || ''}${a.line2 ? ', ' + a.line2 : ''}`,
+                `${a.city || ''}, ${a.state || ''} – ${a.pincode || ''}`, '',
+                o.paymentId ? 'Payment received — please process this order. 🙏' : 'Please confirm and send payment link. 🙏'
             ].filter(l => l !== null).join('\n');
-            window.open(`https://wa.me/919356955036?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+        // Must be called from a tap/click: browsers block WhatsApp windows opened automatically after payment.
+        function sendOrderOnWhatsApp() {
+            if (!lastOrderForWhatsApp) return;
+            const url = `https://wa.me/919356955036?text=${encodeURIComponent(buildOrderWhatsAppText(lastOrderForWhatsApp))}`;
+            const w = window.open(url, '_blank');
+            if (!w) location.href = url;   // pop-up still blocked (some phones) → open in this tab
+            const b = document.getElementById('waSendBtn');
+            if (b) b.textContent = '✓ Opened WhatsApp — tap Send there';
         }
 
-        function completeOrder(orderData) {
+        function completeOrder(orderData, statusSaved) {
             cart = [];
             syncCart();
             document.getElementById('confirmOrderId').textContent = 'Order ID: ' + orderData.orderId;
+            const note = document.getElementById('confirmStatusNote');
+            if (note) note.style.display = statusSaved === false ? 'block' : 'none';
+            const wb = document.getElementById('waSendBtn');
+            if (wb) wb.textContent = '📲 Send order details on WhatsApp';
             showCheckoutStep(3);
             const btn = document.getElementById('placeOrderBtn');
             if (btn) { btn.textContent = 'Place Order via WhatsApp →'; btn.disabled = false; }
@@ -3391,12 +3586,12 @@
         let orderHistoryUnsub = null;
         const ORDER_STATUS_LABELS = {
             'pending_payment': { text: '⏳ Payment Pending', color: '#8a5a00', bg: '#fff4d6' },
-            'payment_failed':  { text: '⚠️ Payment Failed',  color: '#a3261b', bg: '#fde8e6' },
-            'paid':            { text: '✅ Paid',            color: '#17703f', bg: '#e3f5ea' },
-            'shipped':         { text: '📦 Shipped',         color: '#174ea6', bg: '#e6eefc' },
-            'delivered':       { text: '🎉 Delivered',       color: '#17703f', bg: '#e3f5ea' },
-            'cancelled':       { text: '❌ Cancelled',       color: '#a3261b', bg: '#fde8e6' },
-            'pending':         { text: '⏳ Pending',         color: '#8a5a00', bg: '#fff4d6' },
+            'payment_failed': { text: '⚠️ Payment Failed', color: '#a3261b', bg: '#fde8e6' },
+            'paid': { text: '✅ Paid', color: '#17703f', bg: '#e3f5ea' },
+            'shipped': { text: '📦 Shipped', color: '#174ea6', bg: '#e6eefc' },
+            'delivered': { text: '🎉 Delivered', color: '#17703f', bg: '#e3f5ea' },
+            'cancelled': { text: '❌ Cancelled', color: '#a3261b', bg: '#fde8e6' },
+            'pending': { text: '⏳ Pending', color: '#8a5a00', bg: '#fff4d6' },
         };
         function orderTime(o) {
             if (o.createdAt && o.createdAt.toMillis) return o.createdAt.toMillis();
@@ -3459,7 +3654,6 @@
         // ── DATA ──────────────────────────────────────────────────────────────
         let products = [
             // ── SAREES ──
-            { id: 1, name: "Black Floral Organza Saree", category: "Sarees", type: "traditional", price: 1, desc: "Sheer black organza with vibrant hand-embroidered multi-colour floral border and delicate star-scatter all over.", img: "images/inventory/saree/saree1.webp" },
             { id: 2, name: "Rose Pink Organza Saree", category: "Sarees", type: "traditional", price: 3500, desc: "Dreamy rose pink organza saree with a rich floral embroidery border and gold star scatter. Perfect for festive occasions.", img: "images/inventory/saree/saree2.webp" },
             { id: 3, name: "Sunshine Yellow Organza Saree", category: "Sarees", type: "traditional", price: 3200, desc: "Bright yellow organza with intricate pink & lavender floral thread embroidery at the border. Cheerful and elegant.", img: "images/inventory/saree/saree3.webp" },
             { id: 4, name: "Silver Grey Organza Saree", category: "Sarees", type: "contemporary", price: 3800, desc: "Sophisticated silver grey organza with gorgeous multi-colour floral embroidery border and gold star work.", img: "images/inventory/saree/saree4.webp" },
@@ -4146,20 +4340,42 @@
 
         // ── HERO SLIDESHOW ────────────────────────────────────────────────────────
         const DEFAULT_SLIDES = [
-            { src: 'images/inventory/Blouse Embroidary/peacock design blouse.webp', caption: 'Peacock Wing Blouse — 3D gold peacock embroidery', productId: 8 },
-            { src: 'images/inventory/saree/saree2.webp', caption: 'Rose Pink Organza Saree — hand-embroidered floral border', productId: 2 },
-            { src: 'images/inventory/Blouse Embroidary/bridal baraat artwork.webp', caption: 'Bridal Baraat Blouse — a wedding procession, stitch by stitch', productId: 10 },
-            { src: 'images/inventory/Blouse Embroidary/green bridal blouse.webp', caption: 'Green Bridal Blouse — elephants & procession in zari and beads', productId: 13 },
-            { src: 'images/inventory/Suits and Kurties/Screenshot 2026-06-08 160535.webp', caption: 'Pink Ombre Anarkali — embroidered bodice for sangeet nights', productId: 19 },
-            { src: 'images/inventory/saree/saree7.webp', caption: 'Red Bridal Organza Saree — all-over star work', productId: 6 },
-            { src: 'images/inventory/embroidaryArticles/wall art.webp', caption: 'Rajasthani Procession Wall Art — embroidered tapestry', productId: 26 },
             { src: 'images/inventory/embroidaryArticles/Rangoli Maat.webp', caption: 'Lotus Mandala Rangoli Mat — reusable festive décor', productId: 23 },
+            { src: 'images/inventory/embroidaryArticles/wall art.webp', caption: 'Rajasthani Procession Wall Art — embroidered tapestry', productId: 26 },
+            { src: 'images/inventory/saree/saree7.webp', caption: 'Red Bridal Organza Saree — all-over star work', productId: 6 },
+            { src: 'images/inventory/Suits and Kurties/Screenshot 2026-06-08 160535.webp', caption: 'Pink Ombre Anarkali — embroidered bodice for sangeet nights', productId: 19 },
+            { src: 'images/inventory/Blouse Embroidary/green bridal blouse.webp', caption: 'Green Bridal Blouse — elephants & procession in zari and beads', productId: 13 },
+            { src: 'images/inventory/Blouse Embroidary/bridal baraat artwork.webp', caption: 'Bridal Baraat Blouse — a wedding procession, stitch by stitch', productId: 10 },
+            { src: 'images/inventory/saree/saree2.webp', caption: 'Rose Pink Organza Saree — hand-embroidered floral border', productId: 2 },
+            { src: 'images/inventory/Blouse Embroidary/peacock design blouse.webp', caption: 'Peacock Wing Blouse — 3D gold peacock embroidery', productId: 8 },
         ];
 
-        // Load saved slides from localStorage; fallback to defaults
+        // ── SLIDESHOW DATA ───────────────────────────────────────────────────────
+        // The live slideshow is stored in Firestore (siteSettings/slideshow) so every visitor
+        // sees the owner's changes. A local copy is kept so the page shows it instantly.
+        const SLIDES_CACHE_KEY = 'rsw_slideshow_cache';
+        function escAttr(str) { return String(str == null ? '' : str).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        function cleanSlides(arr) {
+            if (!Array.isArray(arr)) return null;
+            const out = arr.filter(s => s && typeof s.src === 'string' && s.src)
+                .map(s => ({ src: s.src, caption: String(s.caption || ''), productId: (typeof s.productId === 'number') ? s.productId : null }));
+            return out.length ? out : null;
+        }
         let slides = (() => {
-            try { const s = JSON.parse(localStorage.getItem('rsw_slides_v2')); return (Array.isArray(s) && s.length === DEFAULT_SLIDES.length) ? s : null; } catch (e) { return null; }
+            try { return cleanSlides(JSON.parse(localStorage.getItem(SLIDES_CACHE_KEY))); } catch (e) { return null; }
         })() || DEFAULT_SLIDES.map(s => ({ ...s }));
+        try { localStorage.removeItem('rsw_slides_v2'); localStorage.removeItem('rsw_slides'); } catch (e) { }
+
+        function loadSlidesFromServer() {
+            db.collection('siteSettings').doc('slideshow').get().then(doc => {
+                if (!doc.exists) return;
+                const fromServer = cleanSlides((doc.data() || {}).slides);
+                if (!fromServer) return;
+                slides = fromServer;
+                try { localStorage.setItem(SLIDES_CACHE_KEY, JSON.stringify(slides)); } catch (e) { }
+                initSlideshow();
+            }).catch(e => console.warn('Slideshow load failed:', e));
+        }
 
         let curSlide = 0, slideTimer;
 
@@ -4167,125 +4383,206 @@
             const track = document.getElementById('slideTrack');
             const dots = document.getElementById('slideDots');
             if (!track) return;
+            if (curSlide >= slides.length) curSlide = 0;
             track.innerHTML = slides.map((d, i) => {
-                const cta = d.productId
+                const hasProduct = d.productId && products.some(p => p.id === d.productId);
+                const cta = hasProduct
                     ? `<button class="slide-cta" onclick="openProduct(${d.productId})">Shop This ›</button>`
                     : '';
                 return `<div class="slide-item" style="position:relative;">
-            <img src="${d.src}" alt="${d.caption}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"
-                 onerror="this.parentElement.style.background='linear-gradient(135deg,#CC5500,#8B1A4A)';this.style.display='none'">
+            <img src="${escAttr(d.src)}" alt="${escAttr(d.caption)}" ${i === 0 ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"
+                 onerror="this.parentElement.style.background='linear-gradient(135deg,var(--crimson),var(--wine))';this.style.display='none'">
             ${cta}
         </div>`;
             }).join('');
-            dots.innerHTML = slides.map((_, i) =>
-                `<button class="slide-dot${i === 0 ? ' active' : ''}" onclick="goSlide(${i})" aria-label="Slide ${i + 1}"></button>`
-            ).join('');
+            dots.innerHTML = slides.length > 1 ? slides.map((_, i) =>
+                `<button class="slide-dot${i === curSlide ? ' active' : ''}" onclick="goSlide(${i})" aria-label="Slide ${i + 1}"></button>`
+            ).join('') : '';
+            document.querySelectorAll('.slide-btn').forEach(b => b.style.display = slides.length > 1 ? '' : 'none');
             updateSlideshow();
-            startSlideTimer();
+            resetSlideTimer();
         }
 
         function updateSlideshow() {
             const track = document.getElementById('slideTrack');
             const dotBtns = document.querySelectorAll('.slide-dot');
             const caption = document.getElementById('slideCaption');
-            if (!track) return;
+            if (!track || !slides.length) return;
             track.style.transform = `translateX(-${curSlide * 100}%)`;
             dotBtns.forEach((d, i) => d.classList.toggle('active', i === curSlide));
             if (caption) caption.textContent = slides[curSlide].caption;
         }
 
         function slideMove(dir) {
+            if (!slides.length) return;
             curSlide = (curSlide + dir + slides.length) % slides.length;
             updateSlideshow();
             resetSlideTimer();
         }
 
         function goSlide(n) { curSlide = n; updateSlideshow(); resetSlideTimer(); }
-        function startSlideTimer() { slideTimer = setInterval(() => slideMove(1), 4500); }
+        function startSlideTimer() { if (slides.length > 1) slideTimer = setInterval(() => slideMove(1), 4500); }
         function resetSlideTimer() { clearInterval(slideTimer); startSlideTimer(); }
 
         // ── ADMIN: SLIDESHOW MANAGEMENT ──────────────────────────────────────────
-        function renderAdminSlides() {
+        // Edits happen on a draft; visitors see nothing until "Save Slideshow Changes".
+        let slideDraft = null, slideDraftDirty = false;
+        const SLIDE_BTN = 'font-size:.78rem;padding:.3rem .55rem;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;line-height:1;';
+
+        function renderAdminSlides(keepDraft) {
             const container = document.getElementById('adminSlideList');
             if (!container) return;
-            container.innerHTML = slides.map((s, i) => {
-                const prodOptions = [
-                    `<option value="">— None (no Shop button) —</option>`,
-                    ...products.map(p => `<option value="${p.id}"${s.productId === p.id ? ' selected' : ''}>${p.name} (₹${p.price.toLocaleString('en-IN')})</option>`)
-                ].join('');
-                const isDefault = DEFAULT_SLIDES[i] && s.src === DEFAULT_SLIDES[i].src;
-                return `
-        <div style="display:grid;grid-template-columns:90px 1fr;gap:1rem;align-items:start;border:1.5px solid var(--border);border-radius:12px;padding:1rem;background:var(--cream);">
-            <!-- Thumbnail -->
-            <div style="position:relative;">
-                <img id="slideThumb${i}" src="${s.src}" alt="Slide ${i + 1}"
-                     style="width:90px;height:64px;object-fit:cover;border-radius:8px;border:2px solid var(--border);"
-                     onerror="this.style.background='#eee';this.style.display='block'">
+            if (!keepDraft || !slideDraft) { slideDraft = slides.map(s => ({ ...s })); slideDraftDirty = false; }
+            const productOptions = sel => [
+                `<option value="">— None (no Shop button) —</option>`,
+                ...products.map(p => `<option value="${p.id}"${sel === p.id ? ' selected' : ''}>${escAttr(p.name)} (₹${p.price.toLocaleString('en-IN')})</option>`)
+            ].join('');
+            const n = slideDraft.length;
+            container.innerHTML = slideDraft.map((s, i) => `
+        <div style="display:grid;grid-template-columns:90px 1fr auto;gap:1rem;align-items:start;border:1.5px solid var(--border);border-radius:12px;padding:1rem;background:var(--cream);">
+            <div>
+                <img src="${escAttr(s.src)}" alt="Slide ${i + 1}"
+                     style="width:90px;height:64px;object-fit:cover;border-radius:8px;border:2px solid var(--border);background:#eee;">
                 <div style="text-align:center;margin-top:4px;">
                     <button onclick="document.getElementById('slideFile${i}').click()"
-                            style="font-size:.7rem;color:var(--crimson);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;">📸 Change</button>
+                            style="font-size:.7rem;color:var(--crimson);background:none;border:none;cursor:pointer;padding:0;">📸 Change photo</button>
                     <input type="file" id="slideFile${i}" accept="image/*" style="display:none" onchange="handleSlideImg(this,${i})">
-                    ${!isDefault ? `<button onclick="resetSlide(${i})" style="display:block;margin:.2rem auto 0;font-size:.7rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;">↺ Reset</button>` : ''}
                 </div>
             </div>
-            <!-- Controls -->
             <div style="display:flex;flex-direction:column;gap:.6rem;">
-                <div style="font-size:.75rem;font-weight:600;color:var(--dark);font-family:'Inter',sans-serif;">Slide ${i + 1}</div>
-                <input type="text" id="slideCaption${i}" value="${s.caption}"
-                       placeholder="Caption text..."
-                       style="font-size:.8rem;padding:.45rem .7rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Inter',sans-serif;color:var(--text);">
+                <div style="font-size:.75rem;font-weight:600;color:var(--dark);">Slide ${i + 1} of ${n}</div>
+                <input type="text" value="${escAttr(s.caption)}" placeholder="Caption text..." aria-label="Caption for slide ${i + 1}"
+                       oninput="slideDraft[${i}].caption=this.value; markSlidesDirty()"
+                       style="font-size:.8rem;padding:.45rem .7rem;border:1.5px solid var(--border);border-radius:7px;color:var(--text);">
                 <div style="display:flex;align-items:center;gap:.5rem;">
-                    <label style="font-size:.75rem;color:var(--muted);font-family:'Inter',sans-serif;white-space:nowrap;">Featured product:</label>
-                    <select id="slideProd${i}" style="flex:1;font-size:.78rem;padding:.4rem .6rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Inter',sans-serif;">
-                        ${prodOptions}
+                    <label for="slideProd${i}" style="font-size:.75rem;color:var(--muted);white-space:nowrap;">Featured product:</label>
+                    <select id="slideProd${i}" onchange="slideDraft[${i}].productId=this.value?parseInt(this.value):null; markSlidesDirty()"
+                            style="flex:1;font-size:.78rem;padding:.4rem .6rem;border:1.5px solid var(--border);border-radius:7px;">
+                        ${productOptions(s.productId)}
                     </select>
                 </div>
             </div>
+            <div style="display:flex;flex-direction:column;gap:.35rem;">
+                <button title="Move up" aria-label="Move slide ${i + 1} up" onclick="moveSlide(${i},-1)" ${i === 0 ? 'disabled style="' + SLIDE_BTN + 'opacity:.35;cursor:default;"' : 'style="' + SLIDE_BTN + '"'}>↑</button>
+                <button title="Move down" aria-label="Move slide ${i + 1} down" onclick="moveSlide(${i},1)" ${i === n - 1 ? 'disabled style="' + SLIDE_BTN + 'opacity:.35;cursor:default;"' : 'style="' + SLIDE_BTN + '"'}>↓</button>
+                <button title="Delete slide" aria-label="Delete slide ${i + 1}" onclick="deleteSlide(${i})" style="${SLIDE_BTN}color:#c0392b;border-color:#f3c6c0;">🗑</button>
+            </div>
+        </div>`).join('') + `
+        <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;border:1.5px dashed var(--border);border-radius:12px;padding:.9rem 1rem;">
+            <label for="newSlideProduct" style="font-size:.8rem;font-weight:600;color:var(--dark);">＋ Add a slide:</label>
+            <select id="newSlideProduct" style="flex:1;min-width:200px;font-size:.8rem;padding:.45rem .6rem;border:1.5px solid var(--border);border-radius:7px;">
+                <option value="">Choose a product (uses its photo & Shop button)…</option>
+                ${products.map(p => `<option value="${p.id}">${escAttr(p.name)}</option>`).join('')}
+            </select>
+            <button class="btn-outline" style="font-size:.82rem;padding:.5rem 1rem;" onclick="addSlideFromProduct()">Add slide</button>
+        </div>
+        <div id="slideSaveStatus" style="font-size:.82rem;min-height:1.1rem;color:${slideDraftDirty ? '#8a5a00' : 'var(--muted)'};">
+            ${slideDraftDirty ? '● Unsaved changes — click “Save Slideshow Changes” to publish them.' : 'Visitors see the slideshow as last saved.'}
         </div>`;
-            }).join('');
         }
 
+        function markSlidesDirty() {
+            slideDraftDirty = true;
+            const st = document.getElementById('slideSaveStatus');
+            if (st) { st.textContent = '● Unsaved changes — click “Save Slideshow Changes” to publish them.'; st.style.color = '#8a5a00'; }
+        }
+        function moveSlide(i, dir) {
+            const j = i + dir;
+            if (j < 0 || j >= slideDraft.length) return;
+            [slideDraft[i], slideDraft[j]] = [slideDraft[j], slideDraft[i]];
+            slideDraftDirty = true; renderAdminSlides(true);
+        }
+        function deleteSlide(i) {
+            if (slideDraft.length <= 1) { toast('The slideshow needs at least one slide.'); return; }
+            const name = slideDraft[i].caption ? `“${slideDraft[i].caption.split('—')[0].trim()}”` : `slide ${i + 1}`;
+            if (!confirm(`Delete ${name} from the slideshow?\n\nIt will disappear for visitors once you click Save.`)) return;
+            slideDraft.splice(i, 1);
+            slideDraftDirty = true; renderAdminSlides(true);
+            toast('Slide removed — click Save to publish.');
+        }
+        function addSlideFromProduct() {
+            const sel = document.getElementById('newSlideProduct');
+            const pid = parseInt(sel && sel.value);
+            const p = products.find(x => x.id === pid);
+            if (!p) { toast('Choose a product to add first.'); return; }
+            slideDraft.push({ src: p.img, caption: `${p.name} — ${(p.desc || '').split('.')[0]}`.slice(0, 90), productId: p.id });
+            slideDraftDirty = true; renderAdminSlides(true);
+            toast('Slide added at the end — click Save to publish.');
+        }
+
+        // Uploaded photos are shrunk in the browser so the slideshow stays fast and fits in the database.
+        function shrinkImage(file, maxSide, quality) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+                    const c = document.createElement('canvas');
+                    c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+                    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+                    let url = c.toDataURL('image/webp', quality);
+                    if (!url.startsWith('data:image/webp')) url = c.toDataURL('image/jpeg', quality);
+                    URL.revokeObjectURL(img.src);
+                    resolve(url);
+                };
+                img.onerror = reject;
+                img.src = URL.createObjectURL(file);
+            });
+        }
         function handleSlideImg(input, idx) {
             const file = input.files[0];
             if (!file) return;
-            if (file.size > 5 * 1024 * 1024) { toast('Image too large — use a photo under 5 MB.'); return; }
-            const reader = new FileReader();
-            reader.onload = e => {
-                slides[idx].src = e.target.result;
-                const thumb = document.getElementById('slideThumb' + idx);
-                if (thumb) { thumb.src = e.target.result; }
-                toast(`Slide ${idx + 1} image updated — click Save to apply.`);
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function resetSlide(idx) {
-            slides[idx] = { ...DEFAULT_SLIDES[idx] };
-            renderAdminSlides();
-            toast(`Slide ${idx + 1} reset to default.`);
+            if (file.size > 15 * 1024 * 1024) { toast('Image too large — use a photo under 15 MB.'); return; }
+            shrinkImage(file, 1200, 0.78).then(url => {
+                slideDraft[idx].src = url;
+                slideDraftDirty = true; renderAdminSlides(true);
+                toast(`Slide ${idx + 1} photo updated — click Save to publish.`);
+            }).catch(() => toast('Could not read that image. Try a JPG or PNG.'));
         }
 
         function resetAllSlides() {
-            slides = DEFAULT_SLIDES.map(s => ({ ...s }));
-            localStorage.removeItem('rsw_slides_v2');
-            renderAdminSlides();
-            initSlideshow();
-            toast('All slides reset to default.');
+            if (!confirm('Replace the slideshow with the original default slides?\n\nVisitors will see this once you click Save.')) return;
+            slideDraft = DEFAULT_SLIDES.map(s => ({ ...s }));
+            slideDraftDirty = true; renderAdminSlides(true);
         }
 
         function saveSlides() {
-            slides.forEach((s, i) => {
-                s.caption = document.getElementById('slideCaption' + i).value.trim() || s.caption;
-                const pid = parseInt(document.getElementById('slideProd' + i).value);
-                s.productId = isNaN(pid) ? null : pid;
+            const setStatus = (msg, color) => {
+                const status = document.getElementById('slideSaveStatus');   // look up each time: the list re-renders
+                if (status) { status.textContent = msg; status.style.color = color; }
+            };
+            if (!slideDraft || !slideDraft.length) { toast('The slideshow needs at least one slide.'); return; }
+            const user = auth.currentUser;
+            if (!user) { setStatus('Please sign in with the owner account first (👤 Sign In), then save again.', '#c0392b'); return; }
+            const toSave = slideDraft.map(s => ({ src: s.src, caption: (s.caption || '').trim(), productId: s.productId || null }));
+            const size = JSON.stringify(toSave).length;
+            if (size > 900000) {
+                setStatus('Too many uploaded photos to save (database limit). Use product photos for some slides, or fewer custom photos.', '#c0392b');
+                return;
+            }
+            setStatus('Saving…', 'var(--muted)');
+            db.collection('siteSettings').doc('slideshow').set({
+                slides: toSave,
+                updatedBy: user.email || user.phoneNumber || user.uid,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+            }).then(() => {
+                slides = toSave.map(s => ({ ...s }));
+                try { localStorage.setItem(SLIDES_CACHE_KEY, JSON.stringify(slides)); } catch (e) { }
+                curSlide = 0;
+                initSlideshow();
+                slideDraftDirty = false;
+                renderAdminSlides(true);
+                setStatus(`✓ Saved. Visitors now see ${slides.length} slide${slides.length === 1 ? '' : 's'}.`, '#1f8a4c');
+                toast('✓ Slideshow saved for all visitors!');
+            }).catch(err => {
+                console.warn('Slideshow save failed:', err);
+                setStatus(err && err.code === 'permission-denied'
+                    ? 'Not allowed: your Firestore rules don’t let this account change site settings yet.'
+                    : 'Save failed: ' + ((err && err.message) || 'unknown error'), '#c0392b');
             });
-            localStorage.setItem('rsw_slides_v2', JSON.stringify(slides));
-            initSlideshow();
-            renderAdminSlides();
-            toast('✓ Slideshow saved!');
         }
 
         initSlideshow();
+        loadSlidesFromServer();
     </script>
 
     <!-- ── FLOATING WHATSAPP BUTTON ── -->
