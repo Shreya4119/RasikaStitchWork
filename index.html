@@ -2564,6 +2564,12 @@
                         received — thank you! Your order is confirmed. You can follow its status any time under
                         <strong>My Orders</strong>.
                     </p>
+                    <div id="confirmStatusNote" style="display:none;background:#fff4d6;color:#8a5a00;border-radius:8px;padding:.6rem .9rem;font-size:.8rem;margin:-.6rem 0 1rem;line-height:1.5;">
+                        Your payment went through, but we couldn't update the order status automatically. It may show
+                        as "Payment Pending" for a little while — please send us your order details on WhatsApp below.
+                    </div>
+                    <button id="waSendBtn" class="btn-primary" onclick="sendOrderOnWhatsApp()"
+                        style="width:100%;justify-content:center;margin-bottom:.7rem;background:#117A43;">📲 Send order details on WhatsApp</button>
                     <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;">
                         <button class="btn-primary" style="justify-content:center;"
                             onclick="closeCheckout(); openOrderHistory();">📦 View My Orders</button>
@@ -3485,6 +3491,7 @@
                 notes: { orderId },
                 theme: { color: '#CC5500' },
                 handler: async function (response) {
+                    let statusSaved = false;
                     try {
                         const orderRef = await orderRefPromise;
                         if (orderRef) {
@@ -3493,11 +3500,17 @@
                                 paymentId: response.razorpay_payment_id,
                                 paidAt: firebase.firestore.FieldValue.serverTimestamp(),
                             });
+                            statusSaved = true;
+                        } else {
+                            console.error('Order was not saved to Firestore, so it cannot be marked paid.');
                         }
-                    } catch (e) { console.warn('Firestore update:', e); }
+                    } catch (e) {
+                        // Usually Firestore rules refusing the update ("Missing or insufficient permissions")
+                        console.error('Could not mark order as paid:', e && e.code, e && e.message);
+                    }
                     decrementStock(cart);
-                    openWhatsAppOrder(orderId, total, response.razorpay_payment_id);
-                    completeOrder(orderData);
+                    lastOrderForWhatsApp = { ...orderData, paymentId: response.razorpay_payment_id };
+                    completeOrder(orderData, statusSaved);
                 },
                 modal: {
                     ondismiss: function () {
@@ -3528,29 +3541,43 @@
             }
         }
 
-        function openWhatsAppOrder(orderId, total, paymentId) {
-            const lines = cart.map(i => `• ${i.name} (x${i.qty}) — ₹${(i.price * i.qty).toLocaleString('en-IN')}`);
-            const msg = [
+        let lastOrderForWhatsApp = null;
+        function buildOrderWhatsAppText(o) {
+            const a = o.address || {};
+            const lines = (o.items || []).map(i => `• ${i.name} (x${i.qty}) — ₹${(i.price * i.qty).toLocaleString('en-IN')}`);
+            return [
                 '🧵 *New Order — रसिका Stitch Works*',
-                `*Order ID:* ${orderId}`,
-                paymentId ? `*Payment:* ✅ Paid (ID: ${paymentId})` : null,
-                `*Customer:* ${savedAddress.name}`,
-                `*Phone:* +91 ${savedAddress.phone}`,
-                currentUser.email ? `*Email:* ${currentUser.email}` : null,
+                `*Order ID:* ${o.orderId}`,
+                o.paymentId ? `*Payment:* ✅ Paid (Razorpay ID: ${o.paymentId})` : null,
+                `*Customer:* ${a.name || ''}`,
+                `*Phone:* +91 ${a.phone || ''}`,
+                o.userEmail ? `*Email:* ${o.userEmail}` : null,
                 '', '*Items:*', ...lines, '',
-                `*Total: ₹${total.toLocaleString('en-IN')}*`, '',
+                `*Total: ₹${(o.total || 0).toLocaleString('en-IN')}*`, '',
                 '*Delivery Address:*',
-                `${savedAddress.line1}${savedAddress.line2 ? ', ' + savedAddress.line2 : ''}`,
-                `${savedAddress.city}, ${savedAddress.state} – ${savedAddress.pincode}`, '',
-                paymentId ? 'Payment received — please process this order. 🙏' : 'Please confirm and send payment link. 🙏'
+                `${a.line1 || ''}${a.line2 ? ', ' + a.line2 : ''}`,
+                `${a.city || ''}, ${a.state || ''} – ${a.pincode || ''}`, '',
+                o.paymentId ? 'Payment received — please process this order. 🙏' : 'Please confirm and send payment link. 🙏'
             ].filter(l => l !== null).join('\n');
-            window.open(`https://wa.me/919356955036?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+        // Must be called from a tap/click: browsers block WhatsApp windows opened automatically after payment.
+        function sendOrderOnWhatsApp() {
+            if (!lastOrderForWhatsApp) return;
+            const url = `https://wa.me/919356955036?text=${encodeURIComponent(buildOrderWhatsAppText(lastOrderForWhatsApp))}`;
+            const w = window.open(url, '_blank');
+            if (!w) location.href = url;   // pop-up still blocked (some phones) → open in this tab
+            const b = document.getElementById('waSendBtn');
+            if (b) b.textContent = '✓ Opened WhatsApp — tap Send there';
         }
 
-        function completeOrder(orderData) {
+        function completeOrder(orderData, statusSaved) {
             cart = [];
             syncCart();
             document.getElementById('confirmOrderId').textContent = 'Order ID: ' + orderData.orderId;
+            const note = document.getElementById('confirmStatusNote');
+            if (note) note.style.display = statusSaved === false ? 'block' : 'none';
+            const wb = document.getElementById('waSendBtn');
+            if (wb) wb.textContent = '📲 Send order details on WhatsApp';
             showCheckoutStep(3);
             const btn = document.getElementById('placeOrderBtn');
             if (btn) { btn.textContent = 'Place Order via WhatsApp →'; btn.disabled = false; }
